@@ -1,1 +1,1 @@
-# ChatBy Android
+# ChatBy for Android
