@@ -3,8 +3,9 @@ package io.github.cs407_chatby.chatby.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-public class AuthPresenter implements AuthContract.Presenter {
+class AuthPresenter implements AuthContract.Presenter {
     @Nullable private AuthContract.View view = null;
 
     @Override
@@ -18,7 +19,16 @@ public class AuthPresenter implements AuthContract.Presenter {
     }
 
     @Override
-    public void submitClicked(boolean isLoggingIn) {
+    public void loginClicked(String email, String password) {
+        if (view == null) return;
+        view.showLoading();
+        Log.d("loginClicked", "email: " + email + ", password: " + password);
+    }
 
+    @Override
+    public void signUpClicked(String email, String password, String passCheck) {
+        if (view == null) return;
+        view.showLoading();
+        Log.d("loginClicked", "email: " + email + ", password: " + password + ", passCheck: " + passCheck);
     }
 }

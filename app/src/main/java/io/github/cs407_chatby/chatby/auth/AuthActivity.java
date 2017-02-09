@@ -13,10 +13,12 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.forms, AuthFragment.newInstance())
-                .commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.forms, AuthFragment.newInstance())
+                    .commit();
+        }
     }
 
     @Override

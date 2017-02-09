@@ -27,24 +27,32 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auth, container, false);
+
+        // Init views
         email = (EditText) view.findViewById(R.id.form_email);
         password = (EditText) view.findViewById(R.id.form_password);
         passConfirm = (EditText) view.findViewById(R.id.form_confirm_password);
         switchForm = (Button) view.findViewById(R.id.button_switch_form);
         submit = (Button) view.findViewById(R.id.button_submit);
 
+        // Click handlers
         switchForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleForm();
             }
         });
-
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (presenter != null) {
-                    presenter.submitClicked(passConfirm.getVisibility() == View.GONE);
+                if (presenter == null || getView() == null) return;
+                if (passConfirm.getVisibility() == View.GONE) {
+                    presenter.loginClicked(email.getText().toString(),
+                            password.getText().toString());
+                } else {
+                    presenter.signUpClicked(email.getText().toString(),
+                            password.getText().toString(),
+                            passConfirm.getText().toString());
                 }
             }
         });
@@ -68,10 +76,13 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     public void toggleForm() {
         if (getView() == null) return;
         ViewUtils.toggleVisibility(passConfirm);
-        if (passConfirm.getVisibility() == View.VISIBLE)
+        if (passConfirm.getVisibility() == View.VISIBLE) {
             switchForm.setText(R.string.login);
-        else
+            submit.setText(R.string.sign_up);
+        } else {
             switchForm.setText(R.string.sign_up);
+            submit.setText(R.string.login);
+        }
     }
 
     @Override
@@ -101,24 +112,6 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     @Override
     public void showError() {
         // TODO
-    }
-
-    @Override @Nullable
-    public String getEmail() {
-        if (email != null) return email.getText().toString();
-        else return null;
-    }
-
-    @Override @Nullable
-    public String getPassword() {
-        if (password != null) return password.getText().toString();
-        else return null;
-    }
-
-    @Override @Nullable
-    public String getPassConfirmation() {
-        if (passConfirm != null) return passConfirm.getText().toString();
-        else return null;
     }
 
     public static AuthFragment newInstance() {

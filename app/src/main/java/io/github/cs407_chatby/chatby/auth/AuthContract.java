@@ -1,12 +1,13 @@
 package io.github.cs407_chatby.chatby.auth;
 
 
-public class AuthContract {
+class AuthContract {
 
-    public interface Presenter {
+    interface Presenter {
         void attachView(View view);
         void detachView();
-        void submitClicked(boolean isLoggingIn);
+        void signUpClicked(String email, String password, String passCheck);
+        void loginClicked(String email, String password);
     }
 
     public interface View {
@@ -15,8 +16,5 @@ public class AuthContract {
         void showSignedUp();
         void showError();
         void toggleForm();
-        String getEmail();
-        String getPassword();
-        String getPassConfirmation();
     }
 }
