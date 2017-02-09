@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.auth;
+package io.github.cs407_chatby.chatby.ui.auth;
 
 
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import io.github.cs407_chatby.chatby.R;
-import io.github.cs407_chatby.chatby.util.ViewUtils;
+import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class AuthFragment extends Fragment implements AuthContract.View, OnBackPressedListener {
     EditText email;

@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.auth;
+package io.github.cs407_chatby.chatby.ui.auth;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

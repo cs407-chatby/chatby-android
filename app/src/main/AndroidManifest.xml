@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="io.github.cs407_chatby.chatby">
 
     <application
-        android:allowBackup="true"
+        android:name=".ChatByApp"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:theme="@style/AppTheme"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".auth.AuthActivity">
+        android:allowBackup="false"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.home.MainActivity"/>
+        <activity android:name=".ui.auth.AuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.util;
+package io.github.cs407_chatby.chatby.utils;
 
 
 import android.support.annotation.NonNull;
