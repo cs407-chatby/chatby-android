@@ -18,7 +18,7 @@ public interface ChatByService {
     Call<User> getUser(@Path("id") Integer id);
 
     @PUT("users/{id}/")
-    Call<User> putUser(@Path("id") Integer id);
+    Call<User> putUser(@Path("id") Integer id, @Body User user);
     
     @DELETE("users/{id}/")
     Call<Void> deleteUser(@Path("id") Integer id);
