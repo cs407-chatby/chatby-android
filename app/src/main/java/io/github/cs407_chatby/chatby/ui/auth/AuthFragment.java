@@ -20,7 +20,7 @@ import static io.github.cs407_chatby.chatby.utils.ActivityUtils.finishAndStart;
 import static io.github.cs407_chatby.chatby.utils.ViewUtils.viewIsVisible;
 
 public class AuthFragment extends Fragment implements AuthContract.View, OnBackPressedListener {
-    EditText email;
+    EditText username;
     EditText password;
     EditText passConfirm;
     Button switchForm;
@@ -37,7 +37,7 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
         View view = inflater.inflate(R.layout.fragment_auth, container, false);
 
         // Init views
-        email = (EditText) view.findViewById(R.id.form_email);
+        username = (EditText) view.findViewById(R.id.form_username);
         password = (EditText) view.findViewById(R.id.form_password);
         passConfirm = (EditText) view.findViewById(R.id.form_confirm_password);
         switchForm = (Button) view.findViewById(R.id.button_switch_form);
@@ -56,7 +56,7 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
             @Override
             public void onClick(View v) {
                 if (presenter != null) presenter.submitClicked(
-                        email.getText().toString(),
+                        username.getText().toString(),
                         password.getText().toString(),
                         passConfirm.getText().toString()
                 );

@@ -33,11 +33,11 @@ class AuthPresenter implements AuthContract.Presenter {
         if (view == null) return;
         view.showLoading();
         if (formType == AuthContract.Form.Login) {
-            Log.d("loginClicked", "email: " + email + ", password: " + password);
+            Log.d("loginClicked", "username: " + email + ", password: " + password);
             login();
             working = true;
         } else if (password.equals(passCheck)) {
-            Log.d("loginClicked", "email: " + email + ", password: " + password + ", passCheck: " + passCheck);
+            Log.d("loginClicked", "username: " + email + ", password: " + password + ", passCheck: " + passCheck);
             login();
             working = true;
         } else {

@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        warning 'InvalidPackage'
+    }
 }
 
 dependencies {
@@ -43,4 +46,15 @@ dependencies {
     // Dagger
     compile 'com.google.dagger:dagger:2.9'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.9'
+
+    // Lombok
+    provided "org.projectlombok:lombok:1.16.10"
+    annotationProcessor "org.projectlombok:lombok:1.16.10"
+
+    // Retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
+
+    // Gson
+    compile 'com.google.code.gson:gson:2.8.0'
 }
