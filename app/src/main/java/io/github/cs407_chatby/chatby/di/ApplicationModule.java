@@ -12,6 +12,8 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import io.github.cs407_chatby.chatby.ChatByApp;
+import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
+import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
@@ -40,6 +42,7 @@ public class ApplicationModule {
     public ChatByService provideChatByService() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(ResourceUrl.class, new ResourceUrl.Adapter())
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()

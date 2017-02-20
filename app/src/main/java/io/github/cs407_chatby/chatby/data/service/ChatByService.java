@@ -39,11 +39,11 @@ public interface ChatByService {
 
     // region Rooms
 
-    @GET("rooms/?my_lat={lat}&my_lon={lon}")
-    Call<List<Room>> getRooms(@Path("lat") double latitude, @Path("lon") double longitude);
+    @GET("rooms/")
+    Call<List<Room>> getRooms(@Query("my_lat") double latitude, @Query("my_lon") double longitude);
 
-    @GET("rooms/?created_by={userId}")
-    Call<List<Room>> getRooms(@Path("userId") int userId);
+    @GET("rooms/")
+    Call<List<Room>> getRooms(@Query("created_by") int userId);
 
     @POST("rooms/")
     Call<Room> postRoom(@Body PostRoom user);
@@ -61,8 +61,8 @@ public interface ChatByService {
 
     // region Messages
 
-    @GET("messages/?room={roomId}")
-    Call<List<Message>> getMessages(@Path("roomId") Integer roomId);
+    @GET("messages/")
+    Call<List<Message>> getMessages(@Query("room") Integer roomId);
 
     @POST("messages/")
     Call<Message> postMessage(@Body PostMessage user);
@@ -80,11 +80,11 @@ public interface ChatByService {
 
     // region Memberships
 
-    @GET("memberships/?room={roomId}")
-    Call<List<Membership>> getMembershipsForRoom(@Path("roomId") Integer roomId);
+    @GET("memberships/")
+    Call<List<Membership>> getMembershipsForRoom(@Query("room") Integer roomId);
 
-    @GET("memberships/?user={userId}")
-    Call<List<Membership>> getMembershipsForUser(@Path("userId") Integer userId);
+    @GET("memberships/")
+    Call<List<Membership>> getMembershipsForUser(@Query("user") Integer userId);
 
     @POST("memberships/")
     Call<Membership> postMembership(@Body PostMembership membership);
@@ -102,8 +102,8 @@ public interface ChatByService {
 
     // region Likes
 
-    @GET("likes/?message={messageId}")
-    Call<List<Like>> getLikes(@Path("messageId") Integer messageId);
+    @GET("likes/")
+    Call<List<Like>> getLikes(@Query("message") Integer messageId);
 
     @POST("likes/")
     Call<Like> postLike(@Body PostLike user);

@@ -5,8 +5,8 @@ import lombok.experimental.Wither;
 
 @Data
 public class Membership {
-    private final ResourceUrl<Membership> url;
+    private final ResourceUrl url;
     @Wither private final Boolean muted;
-    private final ResourceUrl<User> user;
-    private final ResourceUrl<Room> room;
+    private final ResourceUrl user;
+    private final ResourceUrl room;
 }

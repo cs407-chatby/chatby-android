@@ -8,5 +8,5 @@ import lombok.Data;
 public class PostMessage {
     private final Boolean anonymous;
     private final String content;
-    private final ResourceUrl<Room> room;
+    private final ResourceUrl room;
 }

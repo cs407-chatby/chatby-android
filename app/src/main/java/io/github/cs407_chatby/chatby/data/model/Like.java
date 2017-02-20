@@ -5,7 +5,7 @@ import lombok.experimental.Wither;
 
 @Data
 public class Like {
-    private final ResourceUrl<Like> url;
-    private final ResourceUrl<User> user;
-    private final ResourceUrl<Message> message;
+    private final ResourceUrl url;
+    private final ResourceUrl user;
+    private final ResourceUrl message;
 }

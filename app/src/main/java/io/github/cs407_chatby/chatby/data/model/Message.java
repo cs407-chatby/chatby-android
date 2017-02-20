@@ -10,15 +10,15 @@ import lombok.experimental.Wither;
 
 @Data
 public class Message {
-    private final ResourceUrl<Message> url;
+    private final ResourceUrl url;
     private final Date creationTime;
     @Wither private final Boolean anonymous;
     @Wither private final String content;
-    private final ResourceUrl<User> createdBy;
-    private final ResourceUrl<Room> room;
-    private final List<ResourceUrl<User>> likes;
+    private final ResourceUrl createdBy;
+    private final ResourceUrl room;
+    private final List<ResourceUrl> likes;
 
-    public List<ResourceUrl<User>> getLikes() {
+    public List<ResourceUrl> getLikes() {
         return Collections.unmodifiableList(likes);
     }
 }

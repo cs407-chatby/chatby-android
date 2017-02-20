@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class PostMembership {
     private final Boolean muted;
-    private final ResourceUrl<Room> room;
+    private final ResourceUrl room;
 }

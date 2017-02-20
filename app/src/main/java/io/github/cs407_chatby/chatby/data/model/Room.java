@@ -11,7 +11,7 @@ import lombok.experimental.Wither;
 
 @Data
 public class Room {
-    private final ResourceUrl<Room> url;
+    private final ResourceUrl url;
     @Wither private final String name;
     private final Date creationTime;
     @Wither private final Double radius;
@@ -19,10 +19,10 @@ public class Room {
     @Wither private final String imageUrl;
     @Wither private final Double latitude;
     @Wither private final Double longitude;
-    private final ResourceUrl<User> createdBy;
-    private final List<ResourceUrl<User>> members;
+    private final ResourceUrl createdBy;
+    private final List<ResourceUrl> members;
 
-    public List<ResourceUrl<User>> getMembers() {
+    public List<ResourceUrl> getMembers() {
         return Collections.unmodifiableList(members);
     }
 }

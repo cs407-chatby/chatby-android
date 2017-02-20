@@ -7,7 +7,7 @@ import lombok.experimental.Wither;
 
 @Data
 public class User {
-    private final ResourceUrl<User> url;
+    private final ResourceUrl url;
     @Wither private final String username;
     @Wither private final String email;
     private final Boolean isStaff;

@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class PostLike {
-    private final ResourceUrl<Message> message;
+    private final ResourceUrl message;
 }
