@@ -1,7 +1,5 @@
 package io.github.cs407_chatby.chatby.data.model;
 
-import java.util.Date;
-
 import lombok.Data;
 
 @Data
