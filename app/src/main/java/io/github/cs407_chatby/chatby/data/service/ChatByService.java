@@ -32,12 +32,18 @@ public interface ChatByService {
     @DELETE("users/{id}/")
     Call<Void> deleteUser(@Path("id") Integer id);
 
+    @PATCH("user/{id}/")
+    Call<User> patchUserPassword(@Path("id") Integer id, @Body PatchPassword newPassword);
+
     // endregion
 
     // region Rooms
 
-    @GET("rooms/")
-    Call<List<Room>> getRooms();
+    @GET("rooms/?my_lat={lat}&my_lon={lon}")
+    Call<List<Room>> getRooms(@Path("lat") double latitude, @Path("lon") double longitude);
+
+    @GET("rooms/?created_by={userId}")
+    Call<List<Room>> getRooms(@Path("userId") int userId);
 
     @POST("rooms/")
     Call<Room> postRoom(@Body PostRoom user);
@@ -46,7 +52,7 @@ public interface ChatByService {
     Call<Room> getRoom(@Path("id") Integer id);
 
     @PUT("rooms/{id}/")
-    Call<Room> putRoom(@Path("id") Integer id, @Body Room user);
+    Call<Room> putRoom(@Path("id") Integer id, @Body Room room);
 
     @DELETE("rooms/{id}/")
     Call<Void> deleteRoom(@Path("id") Integer id);
@@ -65,10 +71,51 @@ public interface ChatByService {
     Call<Message> getMessage(@Path("id") Integer id);
 
     @PUT("messages/{id}/")
-    Call<Message> putMessage(@Path("id") Integer id, @Body Message user);
+    Call<Message> putMessage(@Path("id") Integer id, @Body Message message);
 
     @DELETE("messages/{id}/")
     Call<Void> deleteMessage(@Path("id") Integer id);
+
+    // endregion
+
+    // region Memberships
+
+    @GET("memberships/?room={roomId}")
+    Call<List<Membership>> getMembershipsForRoom(@Path("roomId") Integer roomId);
+
+    @GET("memberships/?user={userId}")
+    Call<List<Membership>> getMembershipsForUser(@Path("userId") Integer userId);
+
+    @POST("memberships/")
+    Call<Membership> postMembership(@Body PostMembership membership);
+
+    @GET("memberships/{id}/")
+    Call<Membership> getMembership(@Path("id") Integer id);
+
+    @PUT("memberships/{id}/")
+    Call<Membership> putMembership(@Path("id") Integer id, @Body Membership user);
+
+    @DELETE("memberships/{id}/")
+    Call<Void> deleteMembership(@Path("id") Integer id);
+
+    // endregion
+
+    // region Likes
+
+    @GET("likes/?message={messageId}")
+    Call<List<Like>> getLikes(@Path("messageId") Integer messageId);
+
+    @POST("likes/")
+    Call<Like> postLike(@Body PostLike user);
+
+    @GET("likes/{id}/")
+    Call<Like> getLike(@Path("id") Integer id);
+
+    @PUT("likes/{id}/")
+    Call<Like> putLike(@Path("id") Integer id, @Body Like like);
+
+    @DELETE("likes/{id}/")
+    Call<Void> deleteLike(@Path("id") Integer id);
 
     // endregion
 }

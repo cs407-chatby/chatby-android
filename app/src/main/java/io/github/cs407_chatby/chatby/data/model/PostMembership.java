@@ -1,12 +1,9 @@
 package io.github.cs407_chatby.chatby.data.model;
 
-import java.util.Date;
-
 import lombok.Data;
 
 @Data
-public class PostMessage {
-    private final Boolean anonymous;
-    private final String content;
+public class PostMembership {
+    private final Boolean muted;
     private final ResourceUrl<Room> room;
 }
