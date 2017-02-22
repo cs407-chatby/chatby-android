@@ -8,11 +8,13 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.github.cs407_chatby.chatby.ChatByApp;
+import io.github.cs407_chatby.chatby.ui.auth.AuthFragment;
 
 @Singleton
 @Component(modules = {ApplicationModule.class})
 public interface ApplicationComponent {
     void inject(ChatByApp application);
+    void inject(AuthFragment fragment);
 
     @Named("Application")
     Context getContext();

@@ -1,26 +1,48 @@
 package io.github.cs407_chatby.chatby.ui.auth;
 
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.github.cs407_chatby.chatby.data.model.AuthRequest;
+import io.github.cs407_chatby.chatby.data.model.AuthResponse;
+import io.github.cs407_chatby.chatby.data.model.PostUser;
+import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 class AuthPresenter implements AuthContract.Presenter {
-    @Nullable private AuthContract.View view = null;
+
+    private final AccountHolder accountHolder;
+
+    private final ChatByService service;
+
+    @Nullable
+    private AuthContract.View view = null;
+
     private boolean working = false;
+
     private AuthContract.Form formType = AuthContract.Form.Login;
+
+    @Inject
+    public AuthPresenter(ChatByService service, AccountHolder accountHolder) {
+        this.service = service;
+        this.accountHolder = accountHolder;
+    }
 
     @Override
     public void attachView(@NonNull AuthContract.View view) {
         this.view = view;
+        if (accountHolder.readToken() != null) {
+            // TODO make a request to check the token is valid
+            working = true;
+            showSuccess();
+        }
     }
 
     @Override
@@ -30,35 +52,91 @@ class AuthPresenter implements AuthContract.Presenter {
 
     @Override
     public void submitClicked(String email, String password, String passCheck) {
-        if (view == null) return;
+        if (view == null)
+            return;
         view.showLoading();
-        if (formType == AuthContract.Form.Login) {
-            Log.d("loginClicked", "username: " + email + ", password: " + password);
-            login();
-            working = true;
-        } else if (password.equals(passCheck)) {
-            Log.d("loginClicked", "username: " + email + ", password: " + password + ", passCheck: " + passCheck);
-            login();
-            working = true;
-        } else {
-            view.hideLoading();
-            view.showError("Passwords do not match!");
+        switch (formType) {
+            case Login:
+                Log.d("clicked", "login");
+                working = true;
+                login(email, password);
+                break;
+            case SignUp:
+                if (password.equals(passCheck)) {
+                    Log.d("clicked", "signup");
+                    working = true;
+                    signup(email, password);
+                } else {
+                    view.hideLoading();
+                    view.showError("Passwords do not match!");
+                }
+                break;
         }
     }
 
-    private void login() {
-        Observable.just(1)
-                .delay(5, TimeUnit.SECONDS)
+    private void login(String email, String password) {
+        AuthRequest request = new AuthRequest(email, password);
+        service.postAuth(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Integer>() {
-                    public void onSubscribe(Disposable d) {}
-                    public void onNext(Integer o) {}
-                    public void onError(Throwable e) {}
-                    public void onComplete() {
+                .subscribe(new Observer<AuthResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(AuthResponse authResponse) {
+                        Log.d("response", authResponse.toString());
+                        accountHolder.saveToken(authResponse.getToken());
                         showSuccess();
                     }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("response", "login failure", e);
+                        showFailure("Failed to log in!");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
                 });
+    }
+
+    private void signup(final String email, final String password) {
+        PostUser user = new PostUser(email, email, "", "", password);
+        service.postUser(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<User>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(User user) {
+                        Log.d("response", user.toString());
+                        login(email, password);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("response", "signup failure", e);
+                        showFailure("Failed to sign up!");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
+    private void showFailure(String message) {
+        if (view != null && working) {
+            view.hideLoading();
+            view.showError(message);
+            working = false;
+        }
     }
 
     private void showSuccess() {
@@ -71,9 +149,11 @@ class AuthPresenter implements AuthContract.Presenter {
 
     @Override
     public void switchFormsClicked() {
-        if (view == null) return;
+        if (view == null)
+            return;
         view.toggleForm();
-        if (formType == AuthContract.Form.Login) formType = AuthContract.Form.SignUp;
+        if (formType == AuthContract.Form.Login)
+            formType = AuthContract.Form.SignUp;
         else formType = AuthContract.Form.Login;
     }
 
@@ -81,9 +161,12 @@ class AuthPresenter implements AuthContract.Presenter {
     public boolean cancelClicked() {
         if (view == null) return false;
 
-        if (working) view.hideLoading();
-        else if (formType == AuthContract.Form.SignUp) switchFormsClicked();
-        else return false;
+        if (working)
+            view.hideLoading();
+        else if (formType == AuthContract.Form.SignUp)
+            switchFormsClicked();
+        else
+            return false;
 
         working = false;
         return true;

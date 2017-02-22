@@ -13,10 +13,10 @@ import dagger.Module;
 import dagger.Provides;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
-import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @SuppressWarnings("WeakerAccess")
 @Module
@@ -47,6 +47,7 @@ public class ApplicationModule {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://chatby.vohras.tk/api/")
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
