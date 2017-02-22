@@ -1,7 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
 
-</LinearLayout>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/creator_pic"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_account_circle_24dp"/>
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/creator_pic"
+        android:layout_marginBottom="4dp"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        tools:text="Eaps Lecture"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        tools:ignore="RelativeOverlap,UseCompoundDrawables">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/ic_alarm_24dp"
+            android:backgroundTint="@color/colorAccent"
+            android:contentDescription="@string/time_remaining"/>
+
+        <TextView
+            android:id="@+id/time_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLength="10"
+            android:textSize="16sp"
+            android:textColor="@color/colorAccent"
+            tools:text="01:22:15"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/post_title"
+        android:layout_below="@+id/post_title">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circle1"
+            android:layout_width="@dimen/active_circle_size"
+            android:layout_height="@dimen/active_circle_size"
+            android:src="@drawable/ic_account_circle_24dp"
+            app:civ_fill_color="@color/white"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circle2"
+            android:layout_width="@dimen/active_circle_size"
+            android:layout_height="@dimen/active_circle_size"
+            android:layout_toEndOf="@+id/circle1"
+            android:layout_marginStart="@dimen/active_circle_margin"
+            android:src="@drawable/ic_account_circle_24dp"
+            app:civ_fill_color="@color/white"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circle3"
+            android:layout_width="@dimen/active_circle_size"
+            android:layout_height="@dimen/active_circle_size"
+            android:layout_toEndOf="@+id/circle2"
+            android:layout_marginStart="@dimen/active_circle_margin"
+            android:src="@drawable/ic_account_circle_24dp"
+            app:civ_fill_color="@color/white"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/circle3"
+            android:layout_marginStart="@dimen/active_circle_margin">
+
+            <ImageView
+                android:id="@+id/counter_background"
+                android:layout_width="@dimen/active_circle_size"
+                android:layout_height="@dimen/active_circle_size"
+                android:src="@drawable/ic_plain_circle"
+                android:contentDescription="@string/active_counter"/>
+
+            <TextView
+                android:id="@+id/active_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/default_counter"
+                android:textSize="@dimen/active_count_size"
+                android:textColor="@color/white"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
