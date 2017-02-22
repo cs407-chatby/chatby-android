@@ -19,7 +19,6 @@ class AuthContract {
         void showLoading();
         void hideLoading();
         void showLoggedIn();
-        void showSignedUp();
         void showError(String message);
         void toggleForm();
     }

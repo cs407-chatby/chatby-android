@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import javax.inject.Inject;
+
+import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.ui.home.MainActivity;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
@@ -20,7 +23,8 @@ import static io.github.cs407_chatby.chatby.utils.ActivityUtils.finishAndStart;
 import static io.github.cs407_chatby.chatby.utils.ViewUtils.viewIsVisible;
 
 public class AuthFragment extends Fragment implements AuthContract.View, OnBackPressedListener {
-    EditText username;
+
+    EditText email;
     EditText password;
     EditText passConfirm;
     Button switchForm;
@@ -28,16 +32,18 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     View progressBar;
     View dimBackdrop;
 
+    @Inject
     @Nullable
-    AuthPresenter presenter = new AuthPresenter();
+    AuthPresenter presenter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auth, container, false);
+        ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
 
         // Init views
-        username = (EditText) view.findViewById(R.id.form_username);
+        email = (EditText) view.findViewById(R.id.form_email);
         password = (EditText) view.findViewById(R.id.form_password);
         passConfirm = (EditText) view.findViewById(R.id.form_confirm_password);
         switchForm = (Button) view.findViewById(R.id.button_switch_form);
@@ -56,7 +62,7 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
             @Override
             public void onClick(View v) {
                 if (presenter != null) presenter.submitClicked(
-                        username.getText().toString(),
+                        email.getText().toString(),
                         password.getText().toString(),
                         passConfirm.getText().toString()
                 );
@@ -110,12 +116,6 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
 
     @Override
     public void showLoggedIn() {
-        Activity activity = getActivity();
-        if (activity != null) finishAndStart(activity, MainActivity.class);
-    }
-
-    @Override
-    public void showSignedUp() {
         Activity activity = getActivity();
         if (activity != null) finishAndStart(activity, MainActivity.class);
     }
