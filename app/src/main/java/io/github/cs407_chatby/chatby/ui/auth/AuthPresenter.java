@@ -11,10 +11,9 @@ import io.github.cs407_chatby.chatby.data.model.AuthResponse;
 import io.github.cs407_chatby.chatby.data.model.PostUser;
 import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 class AuthPresenter implements AuthContract.Presenter {
 
@@ -77,15 +76,14 @@ class AuthPresenter implements AuthContract.Presenter {
     private void login(String email, String password) {
         AuthRequest request = new AuthRequest(email, password);
         service.postAuth(request)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<AuthResponse>() {
+                .subscribe(new SingleObserver<AuthResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(AuthResponse authResponse) {
+                    public void onSuccess(AuthResponse authResponse) {
                         Log.d("response", authResponse.toString());
                         accountHolder.saveToken(authResponse.getToken());
                         showSuccess();
@@ -96,25 +94,20 @@ class AuthPresenter implements AuthContract.Presenter {
                         Log.e("response", "login failure", e);
                         showFailure("Failed to log in!");
                     }
-
-                    @Override
-                    public void onComplete() {
-                    }
                 });
     }
 
     private void signup(final String email, final String password) {
         PostUser user = new PostUser(email, email, "", "", password);
         service.postUser(user)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<User>() {
+                .subscribe(new SingleObserver<User>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(User user) {
+                    public void onSuccess(User user) {
                         Log.d("response", user.toString());
                         login(email, password);
                     }
@@ -123,10 +116,6 @@ class AuthPresenter implements AuthContract.Presenter {
                     public void onError(Throwable e) {
                         Log.e("response", "signup failure", e);
                         showFailure("Failed to sign up!");
-                    }
-
-                    @Override
-                    public void onComplete() {
                     }
                 });
     }
