@@ -7,13 +7,9 @@ import android.util.Log;
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
-import io.github.cs407_chatby.chatby.data.model.AuthResponse;
 import io.github.cs407_chatby.chatby.data.model.PostUser;
-import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 
 class AuthPresenter implements AuthContract.Presenter {
 
@@ -77,46 +73,26 @@ class AuthPresenter implements AuthContract.Presenter {
         AuthRequest request = new AuthRequest(email, password);
         service.postAuth(request)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<AuthResponse>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onSuccess(AuthResponse authResponse) {
-                        Log.d("response", authResponse.toString());
-                        accountHolder.saveToken(authResponse.getToken());
-                        showSuccess();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("response", "login failure", e);
-                        showFailure("Failed to log in!");
-                    }
+                .subscribe(authResponse -> {
+                    Log.d("response", authResponse.toString());
+                    accountHolder.saveToken(authResponse.getToken());
+                    showSuccess();
+                }, error -> {
+                    Log.e("response", "login failure", error);
+                    showFailure("Failed to log in!");
                 });
     }
 
     private void signup(final String email, final String password) {
-        PostUser user = new PostUser(email, email, "", "", password);
-        service.postUser(user)
+        PostUser postUser = new PostUser(email, email, "", "", password);
+        service.postUser(postUser)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<User>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onSuccess(User user) {
-                        Log.d("response", user.toString());
-                        login(email, password);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("response", "signup failure", e);
-                        showFailure("Failed to sign up!");
-                    }
+                .subscribe(user -> {
+                    Log.d("response", user.toString());
+                    login(email, password);
+                }, error -> {
+                    Log.e("response", "signup failure", error);
+                    showFailure("Failed to sign up!");
                 });
     }
 

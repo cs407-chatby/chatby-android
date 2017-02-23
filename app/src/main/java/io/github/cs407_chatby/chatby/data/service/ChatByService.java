@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.github.cs407_chatby.chatby.data.model.*;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.http.*;
 
@@ -20,7 +19,7 @@ public interface ChatByService {
     // region Users
 
     @GET("users/")
-    Observable<User> getUsers();
+    Single<List<User>> getUsers();
 
     @POST("users/")
     Single<User> postUser(@Body PostUser user);
@@ -42,10 +41,10 @@ public interface ChatByService {
     // region Rooms
 
     @GET("rooms/")
-    Observable<Room> getRooms(@Query("my_lat") double latitude, @Query("my_lon") double longitude);
+    Single<List<Room>> getRooms(@Query("my_lat") double latitude, @Query("my_lon") double longitude);
 
     @GET("rooms/")
-    Observable<Room> getRooms(@Query("created_by") int userId);
+    Single<List<Room>> getRooms(@Query("created_by") int userId);
 
     @POST("rooms/")
     Single<Room> postRoom(@Body PostRoom user);
@@ -64,7 +63,7 @@ public interface ChatByService {
     // region Messages
 
     @GET("messages/")
-    Observable<Message> getMessages(@Query("room") Integer roomId);
+    Single<List<Message>> getMessages(@Query("room") Integer roomId);
 
     @POST("messages/")
     Single<Message> postMessage(@Body PostMessage user);
@@ -83,10 +82,10 @@ public interface ChatByService {
     // region Memberships
 
     @GET("memberships/")
-    Observable<Membership> getMembershipsForRoom(@Query("room") Integer roomId);
+    Single<List<Membership>> getMembershipsForRoom(@Query("room") Integer roomId);
 
     @GET("memberships/")
-    Observable<Membership> getMembershipsForUser(@Query("user") Integer userId);
+    Single<List<Membership>> getMembershipsForUser(@Query("user") Integer userId);
 
     @POST("memberships/")
     Single<Membership> postMembership(@Body PostMembership membership);
@@ -105,7 +104,7 @@ public interface ChatByService {
     // region Likes
 
     @GET("likes/")
-    Observable<Like> getLikes(@Query("message") Integer messageId);
+    Single<List<Like>> getLikes(@Query("message") Integer messageId);
 
     @POST("likes/")
     Single<Like> postLike(@Body PostLike user);

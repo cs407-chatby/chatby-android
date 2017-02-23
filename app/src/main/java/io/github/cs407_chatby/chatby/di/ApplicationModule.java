@@ -15,6 +15,8 @@ import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.CallAdapter;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -40,18 +42,31 @@ public class ApplicationModule {
     }
 
     @Provides
-    public ChatByService provideChatByService() {
-        Gson gson = new GsonBuilder()
+    public Gson provideGson() {
+        return new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ResourceUrl.class, new ResourceUrl.Adapter())
                 .create();
+    }
 
-        Retrofit retrofit = new Retrofit.Builder()
+    @Provides
+    public Converter.Factory provideConverterFactory(Gson gson) {
+        return GsonConverterFactory.create(gson);
+    }
+
+    @Provides
+    public CallAdapter.Factory provideCallAdapterFactory() {
+        return RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io());
+    }
+
+    @Provides
+    public ChatByService provideChatByService(Converter.Factory converterFactory,
+                                              CallAdapter.Factory callAdapterFactory) {
+        return new Retrofit.Builder()
                 .baseUrl("http://chatby.vohras.tk/api/")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        return retrofit.create(ChatByService.class);
+                .addConverterFactory(converterFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .build()
+                .create(ChatByService.class);
     }
 }
