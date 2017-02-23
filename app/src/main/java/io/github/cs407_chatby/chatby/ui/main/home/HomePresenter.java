@@ -1,11 +1,13 @@
 package io.github.cs407_chatby.chatby.ui.main.home;
 
+import android.location.Location;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -14,7 +16,11 @@ import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import lombok.Builder;
 import lombok.Data;
 
@@ -64,12 +70,8 @@ public class HomePresenter implements HomeContract.Presenter {
         }
 
         locationManager.getObservable()
-                .map(location -> {
-                    double longitude = location.getLongitude();
-                    double latitude = location.getLatitude();
-                    return service.getRooms(longitude, latitude).blockingGet();
-                })
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMapSingle(loc -> service.getRooms(loc.getLatitude(), loc.getLongitude()))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rooms -> {
                     if (view != null)
                         view.updateNearby(rooms);
@@ -79,8 +81,8 @@ public class HomePresenter implements HomeContract.Presenter {
                 });
 
         service.getCurrentUser()
-                .map(user -> service.getRooms(user.getUrl().getId()).blockingGet())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(user -> service.getRooms(user.getUrl().getId()))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rooms -> {
                     if (view != null)
                         view.updateCreated(rooms);

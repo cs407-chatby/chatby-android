@@ -29,6 +29,7 @@ public class LocationManager implements
     private final PublishSubject<Location> latestLocation = PublishSubject.create();
     private final GoogleApiClient googleApiClient;
     private final Context context;
+    private Observable<Location> shared = latestLocation.share();
 
     @Inject
     public LocationManager(@Named("Application") Context context) {
@@ -49,7 +50,7 @@ public class LocationManager implements
     }
 
     public Observable<Location> getObservable() {
-        return latestLocation.share();
+        return shared;
     }
 
     @Override

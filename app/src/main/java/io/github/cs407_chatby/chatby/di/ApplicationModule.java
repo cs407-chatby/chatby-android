@@ -20,6 +20,7 @@ import io.github.cs407_chatby.chatby.ui.auth.AuthInterceptor;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -52,6 +53,7 @@ public class ApplicationModule {
         return new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ResourceUrl.class, new ResourceUrl.Adapter())
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
                 .create();
     }
 
@@ -66,9 +68,16 @@ public class ApplicationModule {
     }
 
     @Provides
-    OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor) {
+    public HttpLoggingInterceptor provideLoggingInterceptor() {
+        return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
+    }
+
+    @Provides
+    OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor,
+                                     HttpLoggingInterceptor loggingInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
+                .addInterceptor(loggingInterceptor)
                 .build();
     }
 

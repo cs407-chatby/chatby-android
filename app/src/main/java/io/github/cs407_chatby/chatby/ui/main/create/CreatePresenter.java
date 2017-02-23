@@ -1,6 +1,8 @@
 package io.github.cs407_chatby.chatby.ui.main.create;
 
 
+import android.util.Log;
+
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
 import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 
@@ -9,32 +11,47 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import io.github.cs407_chatby.chatby.data.model.PostRoom;
+import io.github.cs407_chatby.chatby.data.service.ChatByService;
+import io.github.cs407_chatby.chatby.utils.LocationManager;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import retrofit2.HttpException;
 
 public class CreatePresenter implements CreateContract.Presenter,
         CalendarDatePickerDialogFragment.OnDateSetListener,
         RadialTimePickerDialogFragment.OnTimeSetListener {
+
+    private final LocationManager locationManager;
+    private final ChatByService service;
     private CreateContract.View view;
     private Calendar calendar;
 
     @Inject
-    public CreatePresenter() {
+    public CreatePresenter(LocationManager locationManager, ChatByService service) {
         Date date = new Date();
         calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        this.locationManager = locationManager;
+        this.service = service;
     }
 
     @Override
     public void onAttach(CreateContract.View view) {
         this.view = view;
         updateDate();
+        locationManager.start();
     }
 
     @Override
     public void onDetach() {
         view = null;
+        locationManager.stop();
     }
 
     @Override
@@ -44,10 +61,22 @@ public class CreatePresenter implements CreateContract.Presenter,
             return;
         }
 
-        // TODO obtain location and use PostRoom for the creation request
-
-
-        if (view != null) view.showSuccess();
+        locationManager.getObservable()
+                .firstOrError()
+                .timeout(10, TimeUnit.SECONDS)
+                .map(location -> new PostRoom(title, Double.parseDouble(radius),
+                        calendar.getTime(), null, location.getLatitude(), location.getLongitude()))
+                .flatMap(service::postRoom)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(room -> {
+                    Log.d("create", room.toString());
+                    if (view != null)
+                        view.showSuccess();
+                }, error -> {
+                    Log.e("create", error.getMessage(), error);
+                    if (view != null)
+                        view.showError("Failed to create room!");
+                });
     }
 
     @Override
@@ -82,7 +111,7 @@ public class CreatePresenter implements CreateContract.Presenter,
     }
 
     private void updateDate() {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d 'at' h", Locale.US);
+        SimpleDateFormat format = new SimpleDateFormat("EEE, MMM d 'at' h:mm", Locale.US);
         view.updateEndDate(format.format(calendar.getTime()));
     }
 }

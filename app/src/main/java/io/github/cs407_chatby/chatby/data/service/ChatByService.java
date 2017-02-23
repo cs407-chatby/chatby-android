@@ -50,7 +50,7 @@ public interface ChatByService {
     Single<List<Room>> getRooms(@Query("created_by") int userId);
 
     @POST("rooms/")
-    Single<Room> postRoom(@Body PostRoom user);
+    Single<Room> postRoom(@Body PostRoom room);
 
     @GET("rooms/{id}/")
     Single<Room> getRoom(@Path("id") Integer id);
@@ -69,7 +69,7 @@ public interface ChatByService {
     Single<List<Message>> getMessages(@Query("room") Integer roomId);
 
     @POST("messages/")
-    Single<Message> postMessage(@Body PostMessage user);
+    Single<Message> postMessage(@Body PostMessage message);
 
     @GET("messages/{id}/")
     Single<Message> getMessage(@Path("id") Integer id);
@@ -97,7 +97,7 @@ public interface ChatByService {
     Single<Membership> getMembership(@Path("id") Integer id);
 
     @PUT("memberships/{id}/")
-    Single<Membership> putMembership(@Path("id") Integer id, @Body Membership user);
+    Single<Membership> putMembership(@Path("id") Integer id, @Body Membership membership);
 
     @DELETE("memberships/{id}/")
     Completable deleteMembership(@Path("id") Integer id);
@@ -110,7 +110,7 @@ public interface ChatByService {
     Single<List<Like>> getLikes(@Query("message") Integer messageId);
 
     @POST("likes/")
-    Single<Like> postLike(@Body PostLike user);
+    Single<Like> postLike(@Body PostLike like);
 
     @GET("likes/{id}/")
     Single<Like> getLike(@Path("id") Integer id);
