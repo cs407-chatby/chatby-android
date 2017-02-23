@@ -71,4 +71,7 @@ dependencies {
 
     // Gson
     compile 'com.google.code.gson:gson:2.8.0'
+
+    // Custom Views
+    compile 'de.hdodenhof:circleimageview:2.1.0'
 }

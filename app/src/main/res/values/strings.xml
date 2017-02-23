@@ -10,4 +10,7 @@
     <string name="login">login</string>
     <string name="hint_confirm_email">Confirm Email</string>
     <string name="hint_confirm_password">Confirm Password</string>
+    <string name="active_counter">Active Counter</string>
+    <string name="default_counter">+1</string>
+    <string name="time_remaining">Time Remaining</string>
 </resources>
