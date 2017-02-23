@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
-import io.github.cs407_chatby.chatby.ui.home.MainActivity;
+import io.github.cs407_chatby.chatby.ui.main.MainActivity;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 import static io.github.cs407_chatby.chatby.utils.ActivityUtils.finishAndStart;

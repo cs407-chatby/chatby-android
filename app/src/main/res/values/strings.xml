@@ -15,4 +15,12 @@
     <string name="time_remaining">Time Remaining</string>
     <string name="created">Created</string>
     <string name="Nearby">Nearby</string>
+    <string name="title">Title</string>
+    <string name="radius">Radius</string>
+    <string name="lat">Latitude</string>
+    <string name="lng">Longitude</string>
+    <string name="pick_date">Pick date</string>
+    <string name="pick_end_date">Pick End Date</string>
+    <string name="no_date_selected">No date selected</string>
+    <string name="calender">Calender</string>
 </resources>
