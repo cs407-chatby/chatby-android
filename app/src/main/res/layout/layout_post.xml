@@ -3,10 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:layout_marginBottom="1dp"
+    android:layout_height="70dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/creator_pic"
@@ -16,7 +18,7 @@
         android:src="@drawable/ic_account_circle_24dp"/>
 
     <TextView
-        android:id="@+id/post_title"
+        android:id="@+id/room_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/creator_pic"
@@ -36,8 +38,8 @@
         tools:ignore="RelativeOverlap,UseCompoundDrawables">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:background="@drawable/ic_alarm_24dp"
             android:backgroundTint="@color/colorAccent"
             android:contentDescription="@string/time_remaining"/>
@@ -48,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:maxLength="10"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textColor="@color/colorAccent"
             tools:text="01:22:15"/>
 
@@ -57,8 +59,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/post_title"
-        android:layout_below="@+id/post_title">
+        android:layout_alignStart="@+id/room_title"
+        android:layout_below="@+id/room_title">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circle1"

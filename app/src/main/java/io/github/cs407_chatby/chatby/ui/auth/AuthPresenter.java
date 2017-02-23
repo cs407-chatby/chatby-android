@@ -36,7 +36,7 @@ class AuthPresenter implements AuthContract.Presenter {
     }
 
     @Override
-    public void attachView(@NonNull AuthContract.View view) {
+    public void onAttach(@NonNull AuthContract.View view) {
         this.view = view;
         if (accountHolder.readToken() != null) {
             // TODO make a request to check the token is valid
@@ -46,12 +46,12 @@ class AuthPresenter implements AuthContract.Presenter {
     }
 
     @Override
-    public void detachView() {
+    public void onDetach() {
         this.view = null;
     }
 
     @Override
-    public void submitClicked(String email, String password, String passCheck) {
+    public void onSubmit(String email, String password, String passCheck) {
         if (view == null)
             return;
         view.showLoading();
@@ -148,7 +148,7 @@ class AuthPresenter implements AuthContract.Presenter {
     }
 
     @Override
-    public void switchFormsClicked() {
+    public void onSwitchForms() {
         if (view == null)
             return;
         view.toggleForm();
@@ -158,13 +158,13 @@ class AuthPresenter implements AuthContract.Presenter {
     }
 
     @Override
-    public boolean cancelClicked() {
+    public boolean onCancel() {
         if (view == null) return false;
 
         if (working)
             view.hideLoading();
         else if (formType == AuthContract.Form.SignUp)
-            switchFormsClicked();
+            onSwitchForms();
         else
             return false;
 

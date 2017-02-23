@@ -8,11 +8,11 @@ class AuthContract {
     }
 
     interface Presenter {
-        void attachView(View view);
-        void detachView();
-        void submitClicked(String email, String password, String passCheck);
-        void switchFormsClicked();
-        boolean cancelClicked();
+        void onAttach(View view);
+        void onDetach();
+        void onSubmit(String email, String password, String passCheck);
+        void onSwitchForms();
+        boolean onCancel();
     }
 
     public interface View {

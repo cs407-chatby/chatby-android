@@ -55,13 +55,13 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
         switchForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (presenter != null) presenter.switchFormsClicked();
+                if (presenter != null) presenter.onSwitchForms();
             }
         });
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (presenter != null) presenter.submitClicked(
+                if (presenter != null) presenter.onSubmit(
                         email.getText().toString(),
                         password.getText().toString(),
                         passConfirm.getText().toString()
@@ -75,12 +75,12 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     @Override
     public void onStart() {
         super.onStart();
-        if (presenter != null) presenter.attachView(this);
+        if (presenter != null) presenter.onAttach(this);
     }
 
     @Override
     public void onStop() {
-        if (presenter != null) presenter.detachView();
+        if (presenter != null) presenter.onDetach();
         super.onStop();
     }
 
@@ -97,7 +97,7 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
 
     @Override
     public boolean backPressed() {
-        return presenter != null && presenter.cancelClicked();
+        return presenter != null && presenter.onCancel();
     }
 
     @Override
