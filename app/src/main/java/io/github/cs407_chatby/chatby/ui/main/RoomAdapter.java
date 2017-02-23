@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.ui.home;
+package io.github.cs407_chatby.chatby.ui.main;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -69,6 +69,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             ((PostViewHolder) holder).title.setText(room.getName());
             ((PostViewHolder) holder).activeCounter.setText(countText);
             ((PostViewHolder) holder).countdown.setText("00:00:00");
+
+            holder.view.setOnClickListener(v ->
+                    Log.d("Adapter", "Item clicked at position " + holder.getAdapterPosition()));
         }
     }
 
@@ -84,9 +87,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     }
 
     static class RoomViewHolder extends RecyclerView.ViewHolder {
-
+        View view;
         RoomViewHolder(View itemView) {
             super(itemView);
+            this.view = itemView;
         }
     }
 

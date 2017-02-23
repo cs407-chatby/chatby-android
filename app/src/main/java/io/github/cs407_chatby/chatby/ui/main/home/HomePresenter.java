@@ -1,8 +1,7 @@
-package io.github.cs407_chatby.chatby.ui.home;
+package io.github.cs407_chatby.chatby.ui.main.home;
 
 import android.location.Location;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.cs407_chatby.chatby.data.model.PostRoom;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
@@ -22,8 +20,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Nullable
     private HomeContract.View view = null;
-
-    private boolean loading = false;
+    private boolean loading = true;
 
     @Inject
     public HomePresenter(LocationManager locationManager) {
@@ -44,26 +41,26 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void onCreateClicked() {
-
-    }
-
-    @Override
-    public void onFinalizeClicked(PostRoom room) {
-
+        if (view != null) {
+            view.showRoomCreation();
+        }
     }
 
     @Override
     public void onRoomClicked(Room room) {
-
+        // TODO Sprint 2
     }
 
     @Override
     public void onRefreshClicked() {
-        Log.d("Presenter", "Refresh");
-        if (view != null) {
-            Log.d("Presenter", "Refresh not null");
+        loading = true;
+
+        // TODO do actual request.
+
+        if (view != null && loading) {
             view.updateCreated(dummyRooms());
             view.updateNearby(dummyRooms());
+            loading = false;
         }
     }
 

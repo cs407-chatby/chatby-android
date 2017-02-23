@@ -4,10 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:padding="12dp"
-    android:layout_marginBottom="1dp"
+    android:elevation="2dp"
     android:layout_height="70dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -38,8 +39,8 @@
         tools:ignore="RelativeOverlap,UseCompoundDrawables">
 
         <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:background="@drawable/ic_alarm_24dp"
             android:backgroundTint="@color/colorAccent"
             android:contentDescription="@string/time_remaining"/>
@@ -50,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:maxLength="10"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="@color/colorAccent"
             tools:text="01:22:15"/>
 
