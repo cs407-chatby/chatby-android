@@ -3,6 +3,8 @@ package io.github.cs407_chatby.chatby.di;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,5 +1,6 @@
 package io.github.cs407_chatby.chatby.ui.home;
 
+import android.location.Location;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -12,24 +13,33 @@ import javax.inject.Inject;
 import io.github.cs407_chatby.chatby.data.model.PostRoom;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
+import io.github.cs407_chatby.chatby.utils.LocationManager;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class HomePresenter implements HomeContract.Presenter {
+
+    private final LocationManager locationManager;
+
     @Nullable
     private HomeContract.View view = null;
 
     private boolean loading = false;
 
     @Inject
-    public HomePresenter() {}
+    public HomePresenter(LocationManager locationManager) {
+        this.locationManager = locationManager;
+    }
 
     @Override
     public void onAttach(HomeContract.View view) {
         this.view = view;
+        locationManager.start();
     }
 
     @Override
     public void onDetach() {
         view = null;
+        locationManager.stop();
     }
 
     @Override
