@@ -14,7 +14,10 @@ import dagger.Provides;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
+import io.github.cs407_chatby.chatby.ui.auth.AuthInterceptor;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -31,7 +34,8 @@ public class ApplicationModule {
         this.app = app;
     }
 
-    @Provides @Named("Application")
+    @Provides
+    @Named("Application")
     public Context provideApplicationContext() {
         return app;
     }
@@ -60,12 +64,21 @@ public class ApplicationModule {
     }
 
     @Provides
-    public ChatByService provideChatByService(Converter.Factory converterFactory,
+    OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor) {
+        return new OkHttpClient.Builder()
+                .addInterceptor(authInterceptor)
+                .build();
+    }
+
+    @Provides
+    public ChatByService provideChatByService(OkHttpClient okHttpClient,
+                                              Converter.Factory converterFactory,
                                               CallAdapter.Factory callAdapterFactory) {
         return new Retrofit.Builder()
                 .baseUrl("http://chatby.vohras.tk/api/")
                 .addConverterFactory(converterFactory)
                 .addCallAdapterFactory(callAdapterFactory)
+                .client(okHttpClient)
                 .build()
                 .create(ChatByService.class);
     }

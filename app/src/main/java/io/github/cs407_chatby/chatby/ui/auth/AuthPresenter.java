@@ -13,7 +13,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 class AuthPresenter implements AuthContract.Presenter {
 
-    private final AccountHolder accountHolder;
+    private final AuthHolder authHolder;
 
     private final ChatByService service;
 
@@ -25,15 +25,15 @@ class AuthPresenter implements AuthContract.Presenter {
     private AuthContract.Form formType = AuthContract.Form.Login;
 
     @Inject
-    public AuthPresenter(ChatByService service, AccountHolder accountHolder) {
+    public AuthPresenter(ChatByService service, AuthHolder authHolder) {
         this.service = service;
-        this.accountHolder = accountHolder;
+        this.authHolder = authHolder;
     }
 
     @Override
     public void attachView(@NonNull AuthContract.View view) {
         this.view = view;
-        if (accountHolder.readToken() != null) {
+        if (authHolder.readToken() != null) {
             // TODO make a request to check the token is valid
             working = true;
             showSuccess();
@@ -75,7 +75,7 @@ class AuthPresenter implements AuthContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(authResponse -> {
                     Log.d("response", authResponse.toString());
-                    accountHolder.saveToken(authResponse.getToken());
+                    authHolder.saveToken(authResponse.getToken());
                     showSuccess();
                 }, error -> {
                     Log.e("response", "login failure", error);
