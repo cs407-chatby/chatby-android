@@ -7,18 +7,13 @@ import android.util.Log;
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
-import io.github.cs407_chatby.chatby.data.model.AuthResponse;
 import io.github.cs407_chatby.chatby.data.model.PostUser;
-import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 class AuthPresenter implements AuthContract.Presenter {
 
-    private final AccountHolder accountHolder;
+    private final AuthHolder authHolder;
 
     private final ChatByService service;
 
@@ -30,15 +25,15 @@ class AuthPresenter implements AuthContract.Presenter {
     private AuthContract.Form formType = AuthContract.Form.Login;
 
     @Inject
-    public AuthPresenter(ChatByService service, AccountHolder accountHolder) {
+    public AuthPresenter(ChatByService service, AuthHolder authHolder) {
         this.service = service;
-        this.accountHolder = accountHolder;
+        this.authHolder = authHolder;
     }
 
     @Override
     public void onAttach(@NonNull AuthContract.View view) {
         this.view = view;
-        if (accountHolder.readToken() != null) {
+        if (authHolder.readToken() != null) {
             // TODO make a request to check the token is valid
             working = true;
             showSuccess();
@@ -77,57 +72,27 @@ class AuthPresenter implements AuthContract.Presenter {
     private void login(String email, String password) {
         AuthRequest request = new AuthRequest(email, password);
         service.postAuth(request)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<AuthResponse>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(AuthResponse authResponse) {
-                        Log.d("response", authResponse.toString());
-                        accountHolder.saveToken(authResponse.getToken());
-                        showSuccess();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("response", "login failure", e);
-                        showFailure("Failed to log in!");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
+                .subscribe(authResponse -> {
+                    Log.d("response", authResponse.toString());
+                    authHolder.saveToken(authResponse.getToken());
+                    showSuccess();
+                }, error -> {
+                    Log.e("response", "login failure", error);
+                    showFailure("Failed to log in!");
                 });
     }
 
     private void signup(final String email, final String password) {
-        PostUser user = new PostUser(email, email, "", "", password);
-        service.postUser(user)
-                .subscribeOn(Schedulers.io())
+        PostUser postUser = new PostUser(email, email, "", "", password);
+        service.postUser(postUser)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<User>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(User user) {
-                        Log.d("response", user.toString());
-                        login(email, password);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("response", "signup failure", e);
-                        showFailure("Failed to sign up!");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
+                .subscribe(user -> {
+                    Log.d("response", user.toString());
+                    login(email, password);
+                }, error -> {
+                    Log.e("response", "signup failure", error);
+                    showFailure("Failed to sign up!");
                 });
     }
 

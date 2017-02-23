@@ -9,28 +9,32 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-public class AccountHolder {
+public class AuthHolder {
 
     private static final String PREFS_NAME = "CHATBY_ACCOUNT_PREFS";
     private static final String TOKEN_KEY = "ACCOUNT_TOKEN";
 
-    private final SharedPreferences preferences;
+    private final Context context;
 
     @Inject
-    public AccountHolder(@Named("Application") Context context) {
-        preferences = context.getSharedPreferences(PREFS_NAME, 0);
+    public AuthHolder(@Named("Application") Context context) {
+        this.context = context;
+    }
+
+    private SharedPreferences getPreferences() {
+        return context.getSharedPreferences(PREFS_NAME, 0);
     }
 
     public void saveToken(String token) {
-        preferences.edit().putString(TOKEN_KEY, token).apply();
+        getPreferences().edit().putString(TOKEN_KEY, token).apply();
     }
 
     @Nullable
     public String readToken() {
-        return preferences.getString(TOKEN_KEY, null);
+        return getPreferences().getString(TOKEN_KEY, null);
     }
 
     public void deleteToken() {
-        preferences.edit().remove(TOKEN_KEY).apply();
+        getPreferences().edit().remove(TOKEN_KEY).apply();
     }
 }
