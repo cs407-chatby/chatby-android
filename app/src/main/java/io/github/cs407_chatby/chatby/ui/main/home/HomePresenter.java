@@ -1,9 +1,9 @@
 package io.github.cs407_chatby.chatby.ui.main.home;
 
-import android.location.Location;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -11,20 +11,25 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
+import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import lombok.Builder;
+import lombok.Data;
 
 public class HomePresenter implements HomeContract.Presenter {
 
     private final LocationManager locationManager;
+    private final ChatByService service;
 
     @Nullable
     private HomeContract.View view = null;
-    private boolean loading = true;
 
     @Inject
-    public HomePresenter(LocationManager locationManager) {
+    public HomePresenter(LocationManager locationManager, ChatByService service) {
         this.locationManager = locationManager;
+        this.service = service;
     }
 
     @Override
@@ -52,32 +57,36 @@ public class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void onRefreshClicked() {
-        loading = true;
-
-        // TODO do actual request.
-
-        if (view != null && loading) {
-            view.updateCreated(dummyRooms());
-            view.updateNearby(dummyRooms());
-            loading = false;
+    public void onInitialize() {
+        if (view != null) {
+            view.updateCreated(Collections.emptyList());
+            view.updateNearby(Collections.emptyList());
         }
-    }
 
-    private List<Room> dummyRooms() {
-        Room room1 = new Room(new ResourceUrl("whatup"), "Eaps Lecture", new Date(),
-                10.0, new Date(), "oops", 10.0, 10.0, new ResourceUrl("whatup"),
-                new ArrayList<ResourceUrl>());
-        Room room2 = new Room(new ResourceUrl("whatup"), "Eaps Lecture 2", new Date(),
-                10.0, new Date(), "oops", 10.0, 10.0, new ResourceUrl("whatup"),
-                new ArrayList<ResourceUrl>());
-        Room room3 = new Room(new ResourceUrl("whatup"), "Eaps Lecture 3", new Date(),
-                10.0, new Date(), "oops", 10.0, 10.0, new ResourceUrl("whatup"),
-                new ArrayList<ResourceUrl>());
-        List<Room> rooms = new ArrayList<>();
-        rooms.add(room1);
-        rooms.add(room2);
-        rooms.add(room3);
-        return rooms;
+        locationManager.getObservable()
+                .map(location -> {
+                    double longitude = location.getLongitude();
+                    double latitude = location.getLatitude();
+                    return service.getRooms(longitude, latitude).blockingGet();
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(rooms -> {
+                    if (view != null)
+                        view.updateNearby(rooms);
+                }, error -> {
+                    if (view != null)
+                        view.showError("Failed to get nearby rooms!");
+                });
+
+        service.getCurrentUser()
+                .map(user -> service.getRooms(user.getUrl().getId()).blockingGet())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(rooms -> {
+                    if (view != null)
+                        view.updateCreated(rooms);
+                }, error -> {
+                    if (view != null)
+                        view.showError("Failed to get created rooms!");
+                });
     }
 }

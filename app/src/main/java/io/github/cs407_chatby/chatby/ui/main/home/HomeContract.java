@@ -12,7 +12,7 @@ class HomeContract {
         void onDetach();
         void onCreateClicked();
         void onRoomClicked(Room room);
-        void onRefreshClicked();
+        void onInitialize();
     }
 
     interface View {

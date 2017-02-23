@@ -46,6 +46,7 @@ public class CreatePresenter implements CreateContract.Presenter,
 
         // TODO obtain location and use PostRoom for the creation request
 
+
         if (view != null) view.showSuccess();
     }
 

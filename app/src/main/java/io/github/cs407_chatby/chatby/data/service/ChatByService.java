@@ -27,6 +27,9 @@ public interface ChatByService {
     @GET("users/{id}/")
     Single<User> getUser(@Path("id") Integer id);
 
+    @GET("users/current/")
+    Single<User> getCurrentUser();
+
     @PUT("users/{id}/")
     Single<User> putUser(@Path("id") Integer id, @Body User user);
 

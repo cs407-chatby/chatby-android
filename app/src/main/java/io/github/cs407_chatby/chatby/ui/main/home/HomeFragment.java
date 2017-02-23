@@ -57,7 +57,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter != null) presenter.onRefreshClicked();
+        if (presenter != null) presenter.onInitialize();
     }
 
     @Override
