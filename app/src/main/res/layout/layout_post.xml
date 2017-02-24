@@ -23,12 +23,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/creator_pic"
+        android:layout_toStartOf="@+id/expiration"
         android:layout_marginBottom="4dp"
         android:textSize="18sp"
         android:textColor="@color/black"
+        android:maxLines="1"
         tools:text="Eaps Lecture"/>
 
     <LinearLayout
+        android:id="@+id/expiration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
