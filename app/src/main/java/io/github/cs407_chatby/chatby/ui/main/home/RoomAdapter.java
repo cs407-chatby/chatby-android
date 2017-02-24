@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,15 +69,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             String countText = "+" + room.getMembers().size();
             ((PostViewHolder) holder).title.setText(room.getName());
             ((PostViewHolder) holder).activeCounter.setText(countText);
-
-            Date now = new Date();
-            Date expiration = room.getExpireTime();
-            if (expiration == null) expiration = now;
-            long diff = expiration.getTime() - now.getTime();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd:hh:mm", Locale.US);
-            Date timeLeft = new Date(diff);
-
-            ((PostViewHolder) holder).countdown.setText(formatter.format(timeLeft));
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM d 'at' h:mm", Locale.US);
+            ((PostViewHolder) holder).countdown.setText(formatter.format(room.getExpireTime()));
 
             holder.view.setOnClickListener(v -> {
                 Log.d("adapter", "clicked room " + room);
