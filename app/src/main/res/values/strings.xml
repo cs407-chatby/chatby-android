@@ -15,7 +15,7 @@
     <string name="created">Created</string>
     <string name="Nearby">Nearby</string>
     <string name="title">Title</string>
-    <string name="radius">Radius</string>
+    <string name="radius">Radius (km)</string>
     <string name="lat">Latitude</string>
     <string name="lng">Longitude</string>
     <string name="pick_date">Pick date</string>

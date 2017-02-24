@@ -1,12 +1,10 @@
-package io.github.cs407_chatby.chatby.ui.main;
-
+package io.github.cs407_chatby.chatby.ui.main.home;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,7 +18,12 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     List<Room> created;
     List<Room> nearby;
-    AdapterView.OnItemClickListener listener;
+
+    private final Listener listener;
+
+    public RoomAdapter(Listener listener) {
+        this.listener = listener;
+    }
 
     public void setCreated(List<Room> rooms) {
         this.created = rooms;
@@ -34,15 +37,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         notifyDataSetChanged();
     }
 
-    public void setOnClickListener(AdapterView.OnItemClickListener listener) {
-        this.listener = listener;
-    }
-
     @Override
     public RoomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view;
-        switch(viewType) {
+        switch (viewType) {
             case 0:
                 view = inflater.inflate(R.layout.layout_post_header, parent, false);
                 return new HeaderViewHolder(view);
@@ -61,8 +60,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             ((HeaderViewHolder) holder).header.setText(text);
         } else if (holder instanceof PostViewHolder) {
             Room room;
-            int nPos = position-1;
-            int cPos = position-nearby.size()-2;
+            int nPos = position - 1;
+            int cPos = position - nearby.size() - 2;
             if (nPos <= nearby.size()) room = nearby.get(nPos);
             else room = created.get(cPos);
             String countText = "+" + room.getMembers().size();
@@ -70,8 +69,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             ((PostViewHolder) holder).activeCounter.setText(countText);
             ((PostViewHolder) holder).countdown.setText("00:00:00");
 
-            holder.view.setOnClickListener(v ->
-                    Log.d("Adapter", "Item clicked at position " + holder.getAdapterPosition()));
+            holder.view.setOnClickListener(v -> {
+                Log.d("adapter", "clicked room " + room);
+                listener.onClick(room);
+            });
         }
     }
 
@@ -88,6 +89,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     static class RoomViewHolder extends RecyclerView.ViewHolder {
         View view;
+
         RoomViewHolder(View itemView) {
             super(itemView);
             this.view = itemView;
@@ -122,5 +124,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             activeCounter = ViewUtils.findView(itemView, R.id.active_count);
             countdown = ViewUtils.findView(itemView, R.id.time_remaining);
         }
+    }
+
+    public interface Listener {
+        void onClick(Room room);
     }
 }

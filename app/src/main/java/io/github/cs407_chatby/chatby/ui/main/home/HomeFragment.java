@@ -19,7 +19,6 @@ import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.ui.ActionButtonListener;
-import io.github.cs407_chatby.chatby.ui.main.RoomAdapter;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
@@ -30,7 +29,11 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     @Inject
     @Nullable
     HomePresenter presenter;
-    RoomAdapter roomAdapter = new RoomAdapter();
+
+    RoomAdapter roomAdapter = new RoomAdapter(room -> {
+        if (presenter != null)
+            presenter.onRoomClicked(room);
+    });
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
