@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.github.cs407_chatby.chatby.R;
@@ -67,7 +70,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             String countText = "+" + room.getMembers().size();
             ((PostViewHolder) holder).title.setText(room.getName());
             ((PostViewHolder) holder).activeCounter.setText(countText);
-            ((PostViewHolder) holder).countdown.setText("00:00:00");
+
+            Date now = new Date();
+            Date expiration = room.getExpireTime();
+            if (expiration == null) expiration = now;
+            long diff = expiration.getTime() - now.getTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd:hh:mm", Locale.US);
+            Date timeLeft = new Date(diff);
+
+            ((PostViewHolder) holder).countdown.setText(formatter.format(timeLeft));
 
             holder.view.setOnClickListener(v -> {
                 Log.d("adapter", "clicked room " + room);
