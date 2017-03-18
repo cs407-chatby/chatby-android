@@ -5,4 +5,5 @@
     <dimen name="active_circle_size">18dp</dimen>
     <dimen name="active_circle_margin">-6dp</dimen>
     <dimen name="active_count_size">8sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>
