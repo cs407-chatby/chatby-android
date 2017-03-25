@@ -1,6 +1,8 @@
 package io.github.cs407_chatby.chatby.ui.room;
 
 
+import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
+
 public class RoomPresenter implements RoomContract.Presenter {
     private RoomContract.View view = null;
 
@@ -12,5 +14,15 @@ public class RoomPresenter implements RoomContract.Presenter {
     @Override
     public void onDetach() {
         this.view = null;
+    }
+
+    @Override
+    public void onSendPressed(String message) {
+
+    }
+
+    @Override
+    public void onMessageLikePressed(ResourceUrl url) {
+
     }
 }
