@@ -87,7 +87,7 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     @Override
     public void toggleForm() {
         if (getView() == null) return;
-        ViewUtils.toggleVisibility(passConfirm);
+        ViewUtils.toggleExistence(passConfirm);
         if (viewIsVisible(passConfirm)) {
             switchForm.setText(R.string.login);
         } else {
