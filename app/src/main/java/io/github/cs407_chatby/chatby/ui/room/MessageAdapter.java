@@ -38,8 +38,8 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
     }
 
     public void addMessage(@NonNull Message message) {
-        messages.add(message);
-        notifyItemInserted(messages.size() - 1);
+        messages.add(0, message);
+        notifyItemInserted(0);
     }
 
     public void setOnLikeClickedListener(OnLikeClickedListener listener) {

@@ -71,9 +71,13 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         sendButton = ViewUtils.findView(view, R.id.fab);
         expirationText = ViewUtils.findView(view, R.id.expiration_text);
         joinButton = ViewUtils.findView(view, R.id.join_button);
-        progressBar = ViewUtils.findView(view, R.id.progress_bar);
+        progressBar = ViewUtils.findView(view, R.id.loading_view);
 
         joinButton.setOnClickListener(v -> presenter.onJoinRoomPressed());
+        sendButton.setOnClickListener(v -> {
+            presenter.onSendPressed(messageForm.getText().toString());
+        });
+
         messageList.setAdapter(adapter);
 
         return view;
@@ -99,6 +103,13 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Override
     public void showMessages(List<Message> messages) {
         adapter.setMessages(messages);
+    }
+
+    @Override
+    public void showMessageSent(Message message) {
+        adapter.addMessage(message);
+        messageForm.setText("");
+        messageList.scrollToPosition(0);
     }
 
     @Override
@@ -129,7 +140,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         joinButton.animate()
                 .translationY((float) ActivityUtils.dpToPixel(getActivity(), 64))
                 .setDuration(300)
-                //.withEndAction(() -> joinButton.setVisibility(View.GONE))
+                .withEndAction(() -> joinButton.setVisibility(View.GONE))
                 .start();
     }
 
@@ -140,7 +151,6 @@ public class RoomFragment extends Fragment implements RoomContract.View {
 
     @Override
     public void showNotJoined() {
-        //joinButton.setTranslationY(messageList.getHeight());
         joinButton.setVisibility(View.VISIBLE);
         joinButton.animate()
                 .translationY(0.0f)
@@ -152,12 +162,6 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     public void setCurrentUser(User user) {
         Log.d("Room", "Current user loaded");
         adapter.setCurrentUser(user);
-    }
-
-    public static RoomFragment newInstance(Bundle args) {
-        RoomFragment fragment = new RoomFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -176,5 +180,11 @@ public class RoomFragment extends Fragment implements RoomContract.View {
             }
             default: return super.onOptionsItemSelected(item);
         }
+    }
+
+    public static RoomFragment newInstance(Bundle args) {
+        RoomFragment fragment = new RoomFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 }

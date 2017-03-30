@@ -22,6 +22,7 @@ public class RoomContract {
 
     public interface View {
         void showMessages(List<Message> messages);
+        void showMessageSent(Message message);
         void showError(String error);
         void showLoading();
         void hideLoading();
