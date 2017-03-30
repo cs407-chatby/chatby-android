@@ -6,9 +6,12 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
+import io.github.cs407_chatby.chatby.data.model.Like;
+import io.github.cs407_chatby.chatby.data.model.Membership;
+import io.github.cs407_chatby.chatby.data.model.Message;
+import io.github.cs407_chatby.chatby.data.model.PostLike;
 import io.github.cs407_chatby.chatby.data.model.PostMembership;
 import io.github.cs407_chatby.chatby.data.model.PostMessage;
-import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,6 +21,8 @@ public class RoomPresenter implements RoomContract.Presenter {
 
     private RoomContract.View view = null;
     private Room room = null;
+
+    private boolean liking = false;
 
     @Inject
     public RoomPresenter(ChatByService service) {
@@ -38,9 +43,16 @@ public class RoomPresenter implements RoomContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.setCurrentUser(user);
-                });
+                    service.getMembershipsForUserInRoom(user.getId(), room.getId())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(memberships -> {
+                                if (view == null) return;
+                                if (memberships.size() > 0) view.showJoined();
+                                else view.showNotJoined();
+                            }, error -> view.showNotJoined());
+                }, error -> view.showNotJoined());
 
-        service.getMessages(room.getUrl().getId())
+        service.getMessages(room.getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(messages -> {
                     if (view == null) return;
@@ -49,9 +61,6 @@ public class RoomPresenter implements RoomContract.Presenter {
                         view.showMessages(messages);
                     else view.showEmpty();
                 }, error -> view.showError("Failed to retrieve messages"));
-
-        // TODO Check if user has already joined the room
-        view.showNotJoined();
     }
 
     @Override
@@ -74,8 +83,37 @@ public class RoomPresenter implements RoomContract.Presenter {
     }
 
     @Override
-    public void onMessageLikePressed(ResourceUrl url) {
+    public void onMessageLikePressed(Message message) {
+        if (liking) return;
+        liking = true;
+        service.getCurrentUser()
+                .flatMap(user -> service.getLikes(message.getId(), user.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(likes -> {
+                    if (likes.size() > 0) dislike(message, likes.get(0));
+                    else like(message);
+                }, error -> liking = false);
+    }
 
+    private void dislike(Message dislikedMessage, Like like) {
+        service.deleteLike(like.getId())
+                .andThen(service.getMessage(dislikedMessage.getId()))
+                .doFinally(() -> liking = false)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(message -> {
+                    if (view != null) view.showMessageUpdated(message);
+                }, error -> {});
+    }
+
+    private void like(Message likedMessage) {
+        PostLike likePost = new PostLike(likedMessage.getUrl());
+        service.postLike(likePost)
+                .flatMap(like -> service.getMessage(like.getMessage().getId()))
+                .doFinally(() -> liking = false)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(message -> {
+                    if (view != null) view.showMessageUpdated(message);
+                }, error -> {});
     }
 
     @Override
@@ -97,7 +135,25 @@ public class RoomPresenter implements RoomContract.Presenter {
 
     @Override
     public void onLeaveRoomPressed() {
-        // TODO Leave room
-        if (view != null) view.showNotJoined();
+        service.getCurrentUser()
+                .flatMap(user -> service.getMembershipsForUserInRoom(user.getId(), room.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(memberships -> {
+                        if (memberships.size() > 0)
+                            leaveRoom(memberships.get(0));
+                        else if (view != null) view.showNotJoined();
+                }, error -> {
+                        if (view != null) view.showError("Failed to leave room");
+                });
+    }
+
+    private void leaveRoom(Membership membership) {
+        service.deleteMembership(membership.getId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                        if (view != null) view.showNotJoined();
+                }, error -> {
+                        if (view != null) view.showError("Failed to leave room");
+                });
     }
 }

@@ -9,7 +9,8 @@
 
     <color name="off_white">#F1F1F1</color>
     <color name="white">#ffffff</color>
-    <color name="off_black">#1B1B1B</color>
-    <color name="inactive">#9E9E9E</color>
+    <color name="off_off_black">#263238</color>
+    <color name="off_black">#1b1b1b</color>
+    <color name="inactive">#dadada</color>
     <color name="black">#000000</color>
 </resources>

@@ -10,6 +10,7 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -24,12 +25,29 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
     private List<Message> messages = new ArrayList<>();
     private User currentUser;
 
+    int activePosition = -1;
+
     @Inject
     public MessageAdapter() {}
 
     public void setCurrentUser(@NonNull User currentUser) {
         this.currentUser = currentUser;
         notifyDataSetChanged();
+    }
+
+    public void updateMessage(@NonNull Message message) {
+        int position = -1;
+        for (int i = 0; i < messages.size(); i++) {
+            if (messages.get(i).getUrl().equals(message.getUrl())) {
+                position = i;
+                break;
+            }
+        }
+        if (position >= 0) {
+            messages.remove(position);
+            messages.add(position, message);
+            notifyItemChanged(position);
+        }
     }
 
     public void setMessages(@NonNull List<Message> messages) {
@@ -44,10 +62,6 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
 
     public void setOnLikeClickedListener(OnLikeClickedListener listener) {
         this.listener = listener;
-    }
-
-    public void removeOnLikeClickedListener() {
-        this.listener = v -> {};
     }
 
     @Override
@@ -84,16 +98,35 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
             if (currentUser != null)
                 h.likeToggle.setChecked(message.getLikes().contains(currentUser.getUrl()));
 
-            if (position < messages.size() - 1 &&
-                    hasSameCreators(messages.get(position + 1), message)) {
+            if (position > 0 &&
+                    hasSameCreators(messages.get(position - 1), message)) {
                 h.profilePic.setVisibility(View.INVISIBLE);
+            } else {
+                h.profilePic.setVisibility(View.VISIBLE);
             }
 
-            h.messageText.setOnClickListener(v ->
-                    ViewUtils.toggleExistence(h.likeToggle));
+            if (position == activePosition) {
+                h.likeToggle.setVisibility(View.VISIBLE);
+                h.counterText.setVisibility(View.VISIBLE);
+            } else {
+                h.likeToggle.setVisibility(View.GONE);
+            }
+
+            h.root.setOnClickListener(v -> {
+                int oldPosition = activePosition;
+                activePosition = h.getAdapterPosition();
+                notifyItemChanged(oldPosition);
+                if (activePosition == oldPosition)
+                    activePosition = -1;
+                else
+                    notifyItemChanged(activePosition);
+            });
             h.likeToggle.setOnClickListener(v -> {
-                h.likeToggle.setChecked(!h.likeToggle.isChecked());
-                listener.onLike(message);
+                int c = message.getLikes().size();
+                if (h.likeToggle.isChecked()) c++;
+                else c = Math.max(0, c-1);
+                h.counterText.setText(String.format(Locale.US, "+%d", c));
+                if (listener != null) listener.onLike(message);
             });
         }
 
@@ -125,11 +158,13 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
     }
 
     private static class ReceivedMessageViewHolder extends MessageViewHolder {
+        View root;
         ImageView profilePic;
         ToggleButton likeToggle;
 
         ReceivedMessageViewHolder(View view) {
             super(view);
+            root = view;
             profilePic = ViewUtils.findView(view, R.id.creator_pic);
             likeToggle = ViewUtils.findView(view, R.id.like_toggle);
         }

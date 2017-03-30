@@ -74,9 +74,8 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         progressBar = ViewUtils.findView(view, R.id.loading_view);
 
         joinButton.setOnClickListener(v -> presenter.onJoinRoomPressed());
-        sendButton.setOnClickListener(v -> {
-            presenter.onSendPressed(messageForm.getText().toString());
-        });
+        sendButton.setOnClickListener(v -> presenter.onSendPressed(messageForm.getText().toString()));
+        adapter.setOnLikeClickedListener(message -> presenter.onMessageLikePressed(message));
 
         messageList.setAdapter(adapter);
 
@@ -121,6 +120,11 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     }
 
     @Override
+    public void showMessageUpdated(Message message) {
+        adapter.updateMessage(message);
+    }
+
+    @Override
     public void showError(String error) {
         if (getView() != null)
             Snackbar.make(getView(), error, Snackbar.LENGTH_SHORT).show();
@@ -148,7 +152,6 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         joinButton.animate()
                 .translationY((float) ActivityUtils.dpToPixel(getActivity(), 64))
                 .setDuration(300)
-                .withStartAction(() -> joinButton.setVisibility(View.VISIBLE))
                 .withEndAction(() -> joinButton.setVisibility(View.GONE))
                 .start();
     }

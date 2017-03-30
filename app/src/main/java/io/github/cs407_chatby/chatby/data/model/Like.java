@@ -7,4 +7,8 @@ public class Like {
     private final ResourceUrl url;
     private final ResourceUrl user;
     private final ResourceUrl message;
+
+    public Integer getId() {
+        return url.getId();
+    }
 }

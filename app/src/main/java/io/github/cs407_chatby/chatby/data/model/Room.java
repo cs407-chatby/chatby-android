@@ -25,4 +25,8 @@ public class Room {
     public List<ResourceUrl> getMembers() {
         return Collections.unmodifiableList(members);
     }
+
+    public Integer getId() {
+        return url.getId();
+    }
 }

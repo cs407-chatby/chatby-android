@@ -9,4 +9,8 @@ public class Membership {
     @Wither private final Boolean muted;
     private final ResourceUrl user;
     private final ResourceUrl room;
+
+    public Integer getId() {
+        return url.getId();
+    }
 }

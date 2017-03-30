@@ -14,5 +14,9 @@ public class User {
     @Wither private final String firstName;
     @Wither private final String lastName;
     private final Date dateJoined;
+
+    public Integer getId() {
+        return url.getId();
+    }
 }
 

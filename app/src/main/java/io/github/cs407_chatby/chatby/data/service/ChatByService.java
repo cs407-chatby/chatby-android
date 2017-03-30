@@ -90,6 +90,10 @@ public interface ChatByService {
     @GET("memberships/")
     Single<List<Membership>> getMembershipsForUser(@Query("user") Integer userId);
 
+    @GET("memberships/")
+    Single<List<Membership>> getMembershipsForUserInRoom(
+            @Query("user") Integer userId, @Query("room") Integer roomId);
+
     @POST("memberships/")
     Single<Membership> postMembership(@Body PostMembership membership);
 
@@ -108,6 +112,9 @@ public interface ChatByService {
 
     @GET("likes/")
     Single<List<Like>> getLikes(@Query("message") Integer messageId);
+
+    @GET("likes/")
+    Single<List<Like>> getLikes(@Query("message") Integer messageId, @Query("user") Integer userId);
 
     @POST("likes/")
     Single<Like> postLike(@Body PostLike like);

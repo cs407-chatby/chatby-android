@@ -20,4 +20,8 @@ public class Message {
     public List<ResourceUrl> getLikes() {
         return Collections.unmodifiableList(likes);
     }
+
+    public Integer getId() {
+        return url.getId();
+    }
 }
