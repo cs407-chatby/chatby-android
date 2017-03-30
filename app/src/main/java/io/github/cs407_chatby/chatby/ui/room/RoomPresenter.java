@@ -28,16 +28,22 @@ public class RoomPresenter implements RoomContract.Presenter {
     public void onAttach(@NonNull RoomContract.View view, Room room) {
         this.view = view;
         this.room = room;
+    }
 
+    @Override
+    public void onInitialize() {
         view.showLoading();
 
         service.getCurrentUser()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::setCurrentUser);
+                .subscribe(user -> {
+                    if (view != null) view.setCurrentUser(user);
+                });
 
         service.getMessages(room.getUrl().getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(messages -> {
+                    if (view == null) return;
                     view.hideLoading();
                     if (messages.size() > 0)
                         view.showMessages(messages);
@@ -45,6 +51,7 @@ public class RoomPresenter implements RoomContract.Presenter {
                 }, error -> view.showError("Failed to retrieve messages"));
 
         // TODO Check if user has already joined the room
+        view.showNotJoined();
     }
 
     @Override

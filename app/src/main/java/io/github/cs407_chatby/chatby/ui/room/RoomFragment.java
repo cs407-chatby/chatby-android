@@ -90,13 +90,21 @@ public class RoomFragment extends Fragment implements RoomContract.View {
             getActivity().setTitle(room.getName());
             SimpleDateFormat formatter = new SimpleDateFormat("MMM d 'at' h:mm", Locale.US);
             expirationText.setText(formatter.format(room.getExpireTime()));
-            presenter.onAttach(this, room);
+            if (presenter != null) presenter.onAttach(this, room);
         }
+        Log.d("Room", "onStart");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (presenter != null) presenter.onInitialize();
+        Log.d("Room", "onResume");
     }
 
     @Override
     public void onStop() {
-        presenter.onDetach();
+        if (presenter != null) presenter.onDetach();
         super.onStop();
     }
 
@@ -140,6 +148,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         joinButton.animate()
                 .translationY((float) ActivityUtils.dpToPixel(getActivity(), 64))
                 .setDuration(300)
+                .withStartAction(() -> joinButton.setVisibility(View.VISIBLE))
                 .withEndAction(() -> joinButton.setVisibility(View.GONE))
                 .start();
     }
@@ -151,10 +160,10 @@ public class RoomFragment extends Fragment implements RoomContract.View {
 
     @Override
     public void showNotJoined() {
-        joinButton.setVisibility(View.VISIBLE);
         joinButton.animate()
                 .translationY(0.0f)
                 .setDuration(300)
+                .withStartAction(() -> joinButton.setVisibility(View.VISIBLE))
                 .start();
     }
 

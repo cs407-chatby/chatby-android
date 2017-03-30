@@ -81,7 +81,8 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
 
         if (holder instanceof ReceivedMessageViewHolder) {
             ReceivedMessageViewHolder h = (ReceivedMessageViewHolder) holder;
-            h.likeToggle.setChecked(message.getLikes().contains(currentUser.getUrl()));
+            if (currentUser != null)
+                h.likeToggle.setChecked(message.getLikes().contains(currentUser.getUrl()));
 
             if (position < messages.size() - 1 &&
                     hasSameCreators(messages.get(position + 1), message)) {

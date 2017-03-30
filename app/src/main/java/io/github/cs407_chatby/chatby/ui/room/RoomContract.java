@@ -13,6 +13,7 @@ public class RoomContract {
 
     public interface Presenter {
         void onAttach(View view, Room room);
+        void onInitialize();
         void onDetach();
         void onSendPressed(String message);
         void onMessageLikePressed(ResourceUrl url);
