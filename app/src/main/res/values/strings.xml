@@ -27,4 +27,6 @@
     <string name="title_activity_account">AccountActivity</string>
     <string name="new_message_hint">Type your message</string>
     <string name="alarm_clock">alarm clock</string>
+    <string name="join_room">Join the conversation</string>
+    <string name="action_leave">Leave Room</string>
 </resources>

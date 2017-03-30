@@ -17,9 +17,9 @@ import javax.inject.Inject;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.ui.main.MainActivity;
+import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
-import static io.github.cs407_chatby.chatby.utils.ActivityUtils.finishAndStart;
 import static io.github.cs407_chatby.chatby.utils.ViewUtils.viewIsVisible;
 
 public class AuthFragment extends Fragment implements AuthContract.View, OnBackPressedListener {
@@ -117,7 +117,7 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     @Override
     public void showLoggedIn() {
         Activity activity = getActivity();
-        if (activity != null) finishAndStart(activity, MainActivity.class);
+        if (activity != null) ActivityUtils.start(activity, MainActivity.class, null, true);
     }
 
     @Override

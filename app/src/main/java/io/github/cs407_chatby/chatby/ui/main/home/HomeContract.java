@@ -1,6 +1,8 @@
 package io.github.cs407_chatby.chatby.ui.main.home;
 
 
+import android.os.Bundle;
+
 import java.util.List;
 
 import io.github.cs407_chatby.chatby.data.model.Room;
@@ -19,7 +21,7 @@ class HomeContract {
         void updateCreated(List<Room> rooms);
         void updateNearby(List<Room> rooms);
         void showError(String message);
-        void openRoom();
+        void openRoom(Bundle args);
         void showRoomCreation();
         void showNewAvailable();
         void hideNewAvailable();

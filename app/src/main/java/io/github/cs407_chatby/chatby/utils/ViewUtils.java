@@ -1,10 +1,12 @@
 package io.github.cs407_chatby.chatby.utils;
 
 
+import android.app.Activity;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,4 +36,5 @@ public class ViewUtils {
     public static boolean viewIsVisible(@NonNull View view) {
         return view.getVisibility() == View.VISIBLE;
     }
+
 }

@@ -8,7 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Message;
@@ -18,11 +21,15 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private OnLikeClickedListener listener;
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
     private User currentUser;
 
-    public MessageAdapter(User currentUser) {
+    @Inject
+    public MessageAdapter() {}
+
+    public void setCurrentUser(@NonNull User currentUser) {
         this.currentUser = currentUser;
+        notifyDataSetChanged();
     }
 
     public void setMessages(@NonNull List<Message> messages) {
@@ -98,8 +105,10 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
 
     @Override
     public int getItemViewType(int position) {
-        if (messages.get(position).getCreatedBy().equals(currentUser.getUrl()))
-            return 0;
+        if (currentUser != null) {
+            if (messages.get(position).getCreatedBy().equals(currentUser.getUrl()))
+                return 0;
+        }
         return 1;
     }
 

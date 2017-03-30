@@ -1,31 +1,18 @@
 package io.github.cs407_chatby.chatby.ui.main.home;
 
-import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.google.gson.Gson;
+
 import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
-import io.github.cs407_chatby.chatby.data.model.PostMembership;
-import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
-import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import lombok.Builder;
-import lombok.Data;
 
 public class HomePresenter implements HomeContract.Presenter {
 
@@ -62,7 +49,12 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void onRoomClicked(Room room) {
-        // TODO Sprint 2 replace this with opening room UI
+        Bundle bundle = new Bundle();
+        Gson gson = new Gson();
+        String json = gson.toJson(room);
+        bundle.putString("room", json);
+        if (view != null) view.openRoom(bundle);
+        /*
         PostMembership newMembership = new PostMembership(false, room.getUrl());
         service.postMembership(newMembership)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -75,6 +67,7 @@ public class HomePresenter implements HomeContract.Presenter {
                     if (view != null)
                         view.showError("Failed to join room " + room.getName());
                 });
+                */
     }
 
     @Override

@@ -20,6 +20,8 @@ import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.ui.ActionButtonListener;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
+import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
+import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class HomeFragment extends Fragment implements HomeContract.View, ActionButtonListener {
@@ -86,8 +88,8 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     }
 
     @Override
-    public void openRoom() {
-        // TODO Sprint 2
+    public void openRoom(Bundle args) {
+        ActivityUtils.start(getActivity(), RoomActivity.class, args, false);
     }
 
     @Override
