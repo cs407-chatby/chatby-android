@@ -15,14 +15,14 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.R;
-import io.github.cs407_chatby.chatby.data.model.Message;
 import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private OnLikeClickedListener listener;
-    private List<Message> messages = new ArrayList<>();
+    private List<ViewMessage> messages = new ArrayList<>();
     private User currentUser;
 
     int activePosition = -1;
@@ -35,7 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         notifyDataSetChanged();
     }
 
-    public void updateMessage(@NonNull Message message) {
+    public void updateMessage(@NonNull ViewMessage message) {
         int position = -1;
         for (int i = 0; i < messages.size(); i++) {
             if (messages.get(i).getUrl().equals(message.getUrl())) {
@@ -50,12 +50,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
 
-    public void setMessages(@NonNull List<Message> messages) {
+    public void setMessages(@NonNull List<ViewMessage> messages) {
         this.messages = messages;
         notifyDataSetChanged();
     }
 
-    public void addMessage(@NonNull Message message) {
+    public void addMessage(@NonNull ViewMessage message) {
         messages.add(0, message);
         notifyItemInserted(0);
     }
@@ -78,13 +78,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
 
-    private boolean hasSameCreators(Message a, Message b) {
+    private boolean hasSameCreators(ViewMessage a, ViewMessage b) {
         return a.getCreatedBy().equals(b.getCreatedBy());
     }
 
     @Override
     public void onBindViewHolder(MessageViewHolder holder, int position) {
-        Message message = messages.get(position);
+        ViewMessage message = messages.get(position);
         int likes = message.getLikes().size();
         String count = "+" + likes;
 
@@ -95,16 +95,32 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         if (holder instanceof ReceivedMessageViewHolder) {
             ReceivedMessageViewHolder h = (ReceivedMessageViewHolder) holder;
+            h.name.setText(message.getCreatedBy().getUsername());
+
+            // Check if current user has liked the message
             if (currentUser != null)
                 h.likeToggle.setChecked(message.getLikes().contains(currentUser.getUrl()));
 
+            // Check if message is most recent by user
             if (position > 0 &&
                     hasSameCreators(messages.get(position - 1), message)) {
                 h.profilePic.setVisibility(View.INVISIBLE);
+                h.space.setVisibility(View.GONE);
             } else {
                 h.profilePic.setVisibility(View.VISIBLE);
+                if (position > 0) h.space.setVisibility(View.VISIBLE);
+                else h.space.setVisibility(View.GONE);
             }
 
+            // Check if message is first from user since someone else talked
+            if (position == messages.size() - 1 || position < messages.size() - 1 &&
+                    !hasSameCreators(messages.get(position + 1), message)) {
+                h.name.setVisibility(View.VISIBLE);
+            } else {
+                h.name.setVisibility(View.GONE);
+            }
+
+            // Check if message has been clicked on for more info
             if (position == activePosition) {
                 h.likeToggle.setVisibility(View.VISIBLE);
                 h.counterText.setVisibility(View.VISIBLE);
@@ -121,6 +137,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 else
                     notifyItemChanged(activePosition);
             });
+
             h.likeToggle.setOnClickListener(v -> {
                 int c = message.getLikes().size();
                 if (h.likeToggle.isChecked()) c++;
@@ -140,7 +157,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public int getItemViewType(int position) {
         if (currentUser != null) {
-            if (messages.get(position).getCreatedBy().equals(currentUser.getUrl()))
+            if (messages.get(position).getCreatedBy().equals(currentUser))
                 return 0;
         }
         return 1;
@@ -161,16 +178,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         View root;
         ImageView profilePic;
         ToggleButton likeToggle;
+        TextView name;
+        View space;
 
         ReceivedMessageViewHolder(View view) {
             super(view);
             root = view;
             profilePic = ViewUtils.findView(view, R.id.creator_pic);
             likeToggle = ViewUtils.findView(view, R.id.like_toggle);
+            name = ViewUtils.findView(view, R.id.text_name);
+            space = ViewUtils.findView(view, R.id.extra_padding);
         }
     }
 
     interface OnLikeClickedListener {
-        void onLike(Message message);
+        void onLike(ViewMessage message);
     }
 }

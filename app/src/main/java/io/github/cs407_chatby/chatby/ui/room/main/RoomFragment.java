@@ -28,9 +28,9 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
-import io.github.cs407_chatby.chatby.data.model.Message;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
 import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
@@ -109,19 +109,19 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     }
 
     @Override
-    public void showMessages(List<Message> messages) {
+    public void showMessages(List<ViewMessage> messages) {
         adapter.setMessages(messages);
     }
 
     @Override
-    public void showMessageSent(Message message) {
+    public void showMessageSent(ViewMessage message) {
         adapter.addMessage(message);
         messageForm.setText("");
         messageList.scrollToPosition(0);
     }
 
     @Override
-    public void showMessageUpdated(Message message) {
+    public void showMessageUpdated(ViewMessage message) {
         adapter.updateMessage(message);
     }
 

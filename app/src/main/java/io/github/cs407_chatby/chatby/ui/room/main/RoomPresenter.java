@@ -8,12 +8,13 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.Like;
 import io.github.cs407_chatby.chatby.data.model.Membership;
-import io.github.cs407_chatby.chatby.data.model.Message;
 import io.github.cs407_chatby.chatby.data.model.PostLike;
 import io.github.cs407_chatby.chatby.data.model.PostMembership;
 import io.github.cs407_chatby.chatby.data.model.PostMessage;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
+import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class RoomPresenter implements RoomContract.Presenter {
@@ -53,6 +54,11 @@ public class RoomPresenter implements RoomContract.Presenter {
                 }, error -> view.showNotJoined());
 
         service.getMessages(room.getId())
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+                .flatMapSingle(message -> service.getUser(message.getCreatedBy().getId())
+                        .map(user -> ViewMessage.create(message, user)))
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(messages -> {
                     if (view == null) return;
@@ -74,6 +80,8 @@ public class RoomPresenter implements RoomContract.Presenter {
         if (room == null) return;
         PostMessage postMessage = new PostMessage(false, text, room.getUrl());
         service.postMessage(postMessage)
+                .flatMap(message -> service.getUser(message.getCreatedBy().getId())
+                        .map(user -> ViewMessage.create(message, user)))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(message -> {
                     if (view != null) view.showMessageSent(message);
@@ -83,7 +91,7 @@ public class RoomPresenter implements RoomContract.Presenter {
     }
 
     @Override
-    public void onMessageLikePressed(Message message) {
+    public void onMessageLikePressed(ViewMessage message) {
         if (liking) return;
         liking = true;
         service.getCurrentUser()
@@ -95,9 +103,11 @@ public class RoomPresenter implements RoomContract.Presenter {
                 }, error -> liking = false);
     }
 
-    private void dislike(Message dislikedMessage, Like like) {
+    private void dislike(ViewMessage dislikedMessage, Like like) {
         service.deleteLike(like.getId())
                 .andThen(service.getMessage(dislikedMessage.getId()))
+                .flatMap(message -> service.getUser(message.getCreatedBy().getId())
+                        .map(user -> ViewMessage.create(message, user)))
                 .doFinally(() -> liking = false)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(message -> {
@@ -105,10 +115,12 @@ public class RoomPresenter implements RoomContract.Presenter {
                 }, error -> {});
     }
 
-    private void like(Message likedMessage) {
+    private void like(ViewMessage likedMessage) {
         PostLike likePost = new PostLike(likedMessage.getUrl());
         service.postLike(likePost)
                 .flatMap(like -> service.getMessage(like.getMessage().getId()))
+                .flatMap(message -> service.getUser(message.getCreatedBy().getId())
+                        .map(user -> ViewMessage.create(message, user)))
                 .doFinally(() -> liking = false)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(message -> {

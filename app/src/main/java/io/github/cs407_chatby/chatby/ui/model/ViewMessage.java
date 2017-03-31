@@ -28,13 +28,8 @@ public class ViewMessage {
         return url.getId();
     }
 
-    public ViewMessage(Message message, User user) {
-        url = message.getUrl();
-        creationTime = message.getCreationTime();
-        anonymous = message.getAnonymous();
-        content = message.getContent();
-        createdBy = user;
-        room = message.getRoom();
-        likes = message.getLikes();
+    public static ViewMessage create(Message message, User user) {
+        return new ViewMessage(message.getUrl(), message.getCreationTime(), message.getAnonymous(),
+                message.getContent(), user, message.getRoom(), message.getLikes());
     }
 }
