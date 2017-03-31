@@ -155,14 +155,13 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_account_settings: {
+            case R.id.action_account_settings:
                 if (presenter != null) presenter.onAccountSettingsPressed();
-            }
-            case R.id.action_logout: {
+                return true;
+            case R.id.action_logout:
                 if (presenter != null) presenter.onLogout();
                 return true;
-            }
-            case R.id.action_delete_account: {
+            case R.id.action_delete_account:
                 new AlertDialog.Builder(getContext())
                         .setTitle("Delete Account")
                         .setMessage("Are you sure you want to delete your account?")
@@ -172,7 +171,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
                         .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                         .show();
                 return true;
-            }
             default: return super.onOptionsItemSelected(item);
         }
     }
