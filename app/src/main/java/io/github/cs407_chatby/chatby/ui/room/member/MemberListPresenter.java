@@ -1,5 +1,7 @@
 package io.github.cs407_chatby.chatby.ui.room.member;
 
+import javax.inject.Inject;
+
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
 
@@ -7,6 +9,8 @@ import io.github.cs407_chatby.chatby.data.model.Room;
 public class MemberListPresenter implements MemberListContract.Presenter {
     MemberListContract.View view;
     Room room;
+
+    @Inject public MemberListPresenter() {}
 
     @Override
     public void onAttach(MemberListContract.View view, Room room) {

@@ -20,7 +20,7 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberViewHolder> {
     private List<User> members = new ArrayList<>();
     private User currentUser;
-    private Integer ownerId;
+    private Integer ownerId = -1;
 
     private OnDeleteClickedListener listener;
 
@@ -61,10 +61,14 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     @Override
     public void onBindViewHolder(MemberViewHolder holder, int position) {
         User member = members.get(position);
-        if (!currentUser.getId().equals(ownerId))
+        if (currentUser != null) {
+            if (!currentUser.getId().equals(ownerId))
+                holder.delete.setVisibility(View.INVISIBLE);
+            if (member.getId().equals(ownerId))
+                holder.delete.setVisibility(View.INVISIBLE);
+        } else {
             holder.delete.setVisibility(View.INVISIBLE);
-        if (member.getId().equals(ownerId))
-            holder.delete.setVisibility(View.INVISIBLE);
+        }
 
         holder.name.setText(member.getUsername());
 
