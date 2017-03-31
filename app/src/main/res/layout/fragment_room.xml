@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="io.github.cs407_chatby.chatby.ui.room.RoomFragment">
+    tools:context="io.github.cs407_chatby.chatby.ui.room.main.RoomFragment">
 
     <android.support.v7.widget.CardView
         android:id="@+id/expiration_dropdown"

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import io.github.cs407_chatby.chatby.R;
+import io.github.cs407_chatby.chatby.ui.room.main.RoomFragment;
 
 public class RoomActivity extends AppCompatActivity {
 

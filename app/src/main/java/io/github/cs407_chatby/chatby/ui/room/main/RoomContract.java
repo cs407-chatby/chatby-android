@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.ui.room;
+package io.github.cs407_chatby.chatby.ui.room.main;
 
 
 import java.util.List;

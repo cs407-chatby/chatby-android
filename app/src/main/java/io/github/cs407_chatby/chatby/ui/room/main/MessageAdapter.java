@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.ui.room;
+package io.github.cs407_chatby.chatby.ui.room.main;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +20,7 @@ import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 
-class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private OnLikeClickedListener listener;
     private List<Message> messages = new ArrayList<>();
     private User currentUser;

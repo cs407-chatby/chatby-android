@@ -12,7 +12,8 @@ import io.github.cs407_chatby.chatby.ui.auth.AuthFragment;
 import io.github.cs407_chatby.chatby.ui.main.account.AccountFragment;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
 import io.github.cs407_chatby.chatby.ui.main.home.HomeFragment;
-import io.github.cs407_chatby.chatby.ui.room.RoomFragment;
+import io.github.cs407_chatby.chatby.ui.room.main.RoomFragment;
+import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 
 @Singleton
 @Component(modules = {ApplicationModule.class})
@@ -22,6 +23,7 @@ public interface ApplicationComponent {
     void inject(HomeFragment fragment);
     void inject(CreateFragment fragment);
     void inject(RoomFragment fragment);
+    void inject(MemberListFragment fragment);
     void inject(AccountFragment fragment);
 
     @Named("Application")
