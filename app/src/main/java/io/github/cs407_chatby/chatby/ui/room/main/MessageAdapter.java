@@ -58,6 +58,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public void addMessage(@NonNull ViewMessage message) {
         messages.add(0, message);
         notifyItemInserted(0);
+        if (messages.size() > 1) notifyItemChanged(1);
     }
 
     public void setOnLikeClickedListener(OnLikeClickedListener listener) {
@@ -72,7 +73,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 return new MessageViewHolder(view);
             }
             default: {
-                View view = ViewUtils.inflate(parent, R.layout.layout_message);
+                View view = ViewUtils.inflate(parent, R.layout.layout_new_message);
                 return new ReceivedMessageViewHolder(view);
             }
         }
@@ -80,6 +81,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     private boolean hasSameCreators(ViewMessage a, ViewMessage b) {
         return a.getCreatedBy().equals(b.getCreatedBy());
+    }
+
+    private boolean hasTopNeighbor(int position) {
+        if (position >= messages.size() - 1) return false;
+        int topId = messages.get(position + 1).getCreatedBy().getId();
+        int selfId = messages.get(position).getCreatedBy().getId();
+        return topId == selfId;
+    }
+
+    private boolean hasBottomNeighbor(int position) {
+        if (position <= 0) return false;
+        int bottomId = messages.get(position - 1).getCreatedBy().getId();
+        int selfId = messages.get(position).getCreatedBy().getId();
+        return bottomId == selfId;
     }
 
     @Override
@@ -101,23 +116,28 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             if (currentUser != null)
                 h.likeToggle.setChecked(message.getLikes().contains(currentUser.getUrl()));
 
-            // Check if message is most recent by user
-            if (position > 0 &&
-                    hasSameCreators(messages.get(position - 1), message)) {
+            if (hasTopNeighbor(position) && hasBottomNeighbor(position)) {
+                h.name.setVisibility(View.GONE);
+                h.messageLayout.setBackgroundResource(R.drawable.ic_middle_message_bg);
                 h.profilePic.setVisibility(View.INVISIBLE);
                 h.space.setVisibility(View.GONE);
-            } else {
+            } else if (hasTopNeighbor(position)) {
+                h.name.setVisibility(View.GONE);
+                h.messageLayout.setBackgroundResource(R.drawable.ic_bottom_message_bg);
                 h.profilePic.setVisibility(View.VISIBLE);
                 if (position > 0) h.space.setVisibility(View.VISIBLE);
                 else h.space.setVisibility(View.GONE);
-            }
-
-            // Check if message is first from user since someone else talked
-            if (position == messages.size() - 1 || position < messages.size() - 1 &&
-                    !hasSameCreators(messages.get(position + 1), message)) {
+            } else if (hasBottomNeighbor(position)) {
                 h.name.setVisibility(View.VISIBLE);
+                h.messageLayout.setBackgroundResource(R.drawable.ic_top_message_bg);
+                h.profilePic.setVisibility(View.INVISIBLE);
+                h.space.setVisibility(View.GONE);
             } else {
-                h.name.setVisibility(View.GONE);
+                h.name.setVisibility(View.VISIBLE);
+                h.messageLayout.setBackgroundResource(R.drawable.ic_single_message_bg);
+                h.profilePic.setVisibility(View.VISIBLE);
+                if (position > 0) h.space.setVisibility(View.VISIBLE);
+                else h.space.setVisibility(View.GONE);
             }
 
             // Check if message has been clicked on for more info
@@ -145,6 +165,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 h.counterText.setText(String.format(Locale.US, "+%d", c));
                 if (listener != null) listener.onLike(message);
             });
+        } else {
+            if (hasTopNeighbor(position) && hasBottomNeighbor(position))
+                holder.messageLayout.setBackgroundResource(R.drawable.ic_middle_sent_bg);
+            else if (hasTopNeighbor(position))
+                holder.messageLayout.setBackgroundResource(R.drawable.ic_bottom_sent_bg);
+            else if (hasBottomNeighbor(position))
+                holder.messageLayout.setBackgroundResource(R.drawable.ic_top_sent_bg);
+            else
+                holder.messageLayout.setBackgroundResource(R.drawable.ic_single_message_bg);
         }
 
     }
@@ -166,11 +195,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageText;
         TextView counterText;
+        View messageLayout;
 
         MessageViewHolder(View view) {
             super(view);
             messageText = ViewUtils.findView(view, R.id.text_message);
             counterText = ViewUtils.findView(view, R.id.like_counter);
+            messageLayout = ViewUtils.findView(view, R.id.layout_message);
         }
     }
 
