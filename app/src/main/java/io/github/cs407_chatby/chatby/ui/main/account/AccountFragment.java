@@ -40,6 +40,7 @@ public class AccountFragment extends Fragment implements AccountContract.View {
         if (getArguments() != null) {
             String json = getArguments().getString("user");
             User user = new Gson().fromJson(json, User.class);
+            email = ViewUtils.findView(view, R.id.edit_email);
             username = ViewUtils.findView(view, R.id.edit_username);
             firstName = ViewUtils.findView(view, R.id.edit_first_name);
             lastName = ViewUtils.findView(view, R.id.edit_last_name);

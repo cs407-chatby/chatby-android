@@ -36,7 +36,7 @@ public interface ChatByService {
     @DELETE("users/{id}/")
     Completable deleteUser(@Path("id") Integer id);
 
-    @PATCH("user/{id}/")
+    @PATCH("users/{id}/")
     Single<User> patchUserPassword(@Path("id") Integer id, @Body PatchPassword newPassword);
 
     // endregion

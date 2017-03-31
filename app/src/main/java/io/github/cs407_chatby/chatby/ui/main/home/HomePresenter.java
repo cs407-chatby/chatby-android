@@ -113,11 +113,14 @@ public class HomePresenter implements HomeContract.Presenter {
         service.getCurrentUser()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
-                        if (view != null) {
-                            Bundle bundle = new Bundle();
-                            bundle.putString("user", new Gson().toJson(user));
-                            view.openAccount(bundle);
-                        }
+                    if (view != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("user", new Gson().toJson(user));
+                        view.openAccount(bundle);
+                    }
+                }, error -> {
+                    if (view != null)
+                        view.showError("Failed to get current user");
                 });
     }
 }
