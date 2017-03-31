@@ -2,6 +2,7 @@ package io.github.cs407_chatby.chatby.ui.room.member;
 
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,21 +29,25 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
     MemberAdapter adapter;
 
     RecyclerView memberList;
+    Room room;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
+        room = new Gson().fromJson(getArguments().getString("room"), Room.class);
         View view = inflater.inflate(R.layout.fragment_member_list, container, false);
         memberList = ViewUtils.findView(view, R.id.member_list);
-        if (memberList != null && adapter != null) memberList.setAdapter(adapter);
+        if (memberList != null && adapter != null) {
+            adapter.setOwner(room.getCreatedBy().getId());
+            memberList.setAdapter(adapter);
+        }
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Room room = new Gson().fromJson(getArguments().getString("room"), Room.class);
         if (room != null && presenter != null) presenter.onAttach(this, room);
     }
 
@@ -60,7 +65,7 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
 
     @Override
     public void showMembers(List<User> members) {
-
+        if (adapter != null) adapter.setMembers(members);
     }
 
     @Override
@@ -70,17 +75,18 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
 
     @Override
     public void showError(String error) {
-
+        if (getView() != null)
+            Snackbar.make(getView(), error, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showMemberDeleted(User user) {
-
+        showError(user.getUsername() + " successfully removed");
     }
 
     @Override
     public void setCurrentUser(User user) {
-
+        if (adapter != null) adapter.setCurrentUser(user);
     }
 
     public static MemberListFragment newInstance(Bundle args) {

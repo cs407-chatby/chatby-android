@@ -38,4 +38,5 @@
     <string name="update_pass">Update Password</string>
     <string name="account_settings">Account Settings</string>
     <string name="remove">Remove</string>
+    <string name="action_members">View Members</string>
 </resources>

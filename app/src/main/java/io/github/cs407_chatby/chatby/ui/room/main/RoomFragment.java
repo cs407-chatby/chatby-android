@@ -31,6 +31,7 @@ import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Message;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
@@ -185,6 +186,13 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_members: {
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.frame, MemberListFragment.newInstance(getArguments()))
+                        .addToBackStack(null)
+                        .commit();
+            }
             case R.id.action_leave: {
                 presenter.onLeaveRoomPressed();
                 Log.d("Room", "Leaving room");
