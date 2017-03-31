@@ -25,6 +25,7 @@
         android:layout_toStartOf="@+id/button_remove"
         android:textSize="20sp"
         android:textColor="@color/off_black"
+        android:maxLines="1"
         tools:text="Joe Bruckner"/>
 
     <Button

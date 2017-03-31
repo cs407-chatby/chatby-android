@@ -189,7 +189,10 @@ public class RoomFragment extends Fragment implements RoomContract.View {
             case R.id.action_members: {
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_down,
+                                R.anim.slide_in_up, R.anim.slide_out_down)
                         .add(R.id.frame, MemberListFragment.newInstance(getArguments()))
+                        .setBreadCrumbShortTitle("Members")
                         .addToBackStack(null)
                         .commit();
                 return true;

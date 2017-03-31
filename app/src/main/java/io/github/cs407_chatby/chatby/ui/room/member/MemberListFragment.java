@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
@@ -29,6 +30,7 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
     MemberAdapter adapter;
 
     RecyclerView memberList;
+    ProgressBar progressBar;
     Room room;
 
     @Override
@@ -38,6 +40,7 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
         room = new Gson().fromJson(getArguments().getString("room"), Room.class);
         View view = inflater.inflate(R.layout.fragment_member_list, container, false);
         memberList = ViewUtils.findView(view, R.id.member_list);
+        progressBar = ViewUtils.findView(view, R.id.progress_bar);
         if (memberList != null && adapter != null) {
             adapter.setOwner(room.getCreatedBy().getId());
             adapter.setListener(user -> {
@@ -51,7 +54,10 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
     @Override
     public void onStart() {
         super.onStart();
-        if (room != null && presenter != null) presenter.onAttach(this, room);
+        if (room != null) {
+            if (presenter != null) presenter.onAttach(this, room);
+            getActivity().setTitle("Members of " + room.getName());
+        }
     }
 
     @Override
@@ -63,21 +69,27 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
     @Override
     public void onStop() {
         if (presenter != null) presenter.onDetach();
+        if (room != null) getActivity().setTitle(room.getName());
         super.onStop();
     }
 
     @Override
     public void showMembers(List<User> members) {
+        progressBar.setVisibility(View.INVISIBLE);
+        memberList.setVisibility(View.VISIBLE);
         if (adapter != null) adapter.setMembers(members);
     }
 
     @Override
     public void showLoading() {
-
+        progressBar.setVisibility(View.VISIBLE);
+        memberList.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showError(String error) {
+        progressBar.setVisibility(View.INVISIBLE);
+        memberList.setVisibility(View.VISIBLE);
         if (getView() != null)
             Snackbar.make(getView(), error, Snackbar.LENGTH_SHORT).show();
     }

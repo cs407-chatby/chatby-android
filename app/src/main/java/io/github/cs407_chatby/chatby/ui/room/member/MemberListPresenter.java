@@ -34,6 +34,8 @@ public class MemberListPresenter implements MemberListContract.Presenter {
 
     @Override
     public void onInitialize() {
+        if (view != null) view.showLoading();
+
         service.getCurrentUser()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
