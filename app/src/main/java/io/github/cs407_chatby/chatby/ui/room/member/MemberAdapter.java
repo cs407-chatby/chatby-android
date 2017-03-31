@@ -22,11 +22,25 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     private User currentUser;
     private Integer ownerId;
 
+    private OnDeleteClickedListener listener;
+
     @Inject public MemberAdapter() {}
 
     public void setMembers(@NonNull List<User> members) {
         this.members = members;
         notifyDataSetChanged();
+    }
+
+    public void removeMember(User user) {
+        int index = members.indexOf(user);
+        if (index > 0) {
+            members.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
+    public void setListener(OnDeleteClickedListener listener) {
+        this.listener = listener;
     }
 
     public void setOwner(Integer owner) {
@@ -53,6 +67,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
             holder.delete.setVisibility(View.INVISIBLE);
 
         holder.name.setText(member.getUsername());
+
+        holder.delete.setOnClickListener(v -> {
+            if (listener != null) listener.onDeleteClicked(member);
+        });
     }
 
     @Override
@@ -69,6 +87,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
             name = ViewUtils.findView(itemView, R.id.name);
             delete = ViewUtils.findView(itemView, R.id.delete);
         }
+    }
+
+    public interface OnDeleteClickedListener {
+        void onDeleteClicked(User user);
     }
 
 }

@@ -40,6 +40,9 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
         memberList = ViewUtils.findView(view, R.id.member_list);
         if (memberList != null && adapter != null) {
             adapter.setOwner(room.getCreatedBy().getId());
+            adapter.setListener(user -> {
+                if (presenter != null) presenter.onDeletePressed(user.getUrl());
+            });
             memberList.setAdapter(adapter);
         }
         return view;
@@ -82,6 +85,7 @@ public class MemberListFragment extends Fragment implements MemberListContract.V
     @Override
     public void showMemberDeleted(User user) {
         showError(user.getUsername() + " successfully removed");
+        if (adapter != null) adapter.removeMember(user);
     }
 
     @Override
