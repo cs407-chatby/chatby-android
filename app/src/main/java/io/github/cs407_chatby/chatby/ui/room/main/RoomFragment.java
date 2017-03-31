@@ -192,6 +192,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
                         .add(R.id.frame, MemberListFragment.newInstance(getArguments()))
                         .addToBackStack(null)
                         .commit();
+                return true;
             }
             case R.id.action_leave: {
                 presenter.onLeaveRoomPressed();
