@@ -54,20 +54,6 @@ public class HomePresenter implements HomeContract.Presenter {
         String json = gson.toJson(room);
         bundle.putString("room", json);
         if (view != null) view.openRoom(bundle);
-        /*
-        PostMembership newMembership = new PostMembership(false, room.getUrl());
-        service.postMembership(newMembership)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(membership -> {
-                    Log.d("membership", membership.toString());
-                    if (view != null)
-                        view.showError("Joined room " + room.getName());
-                }, error -> {
-                    Log.e("membership", error.getMessage(), error);
-                    if (view != null)
-                        view.showError("Failed to join room " + room.getName());
-                });
-                */
     }
 
     @Override
@@ -98,5 +84,15 @@ public class HomePresenter implements HomeContract.Presenter {
                     if (view != null)
                         view.showError("Failed to get created rooms!");
                 });
+    }
+
+    @Override
+    public void onLogout() {
+
+    }
+
+    @Override
+    public void onDeleteAccount() {
+
     }
 }

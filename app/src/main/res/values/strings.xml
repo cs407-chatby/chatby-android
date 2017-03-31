@@ -29,4 +29,6 @@
     <string name="alarm_clock">alarm clock</string>
     <string name="join_room">Join the conversation</string>
     <string name="action_leave">Leave Room</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_delete_account">Delete Account</string>
 </resources>

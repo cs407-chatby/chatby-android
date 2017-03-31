@@ -15,6 +15,8 @@ class HomeContract {
         void onCreateClicked();
         void onRoomClicked(Room room);
         void onInitialize();
+        void onLogout();
+        void onDeleteAccount();
     }
 
     interface View {
@@ -23,6 +25,7 @@ class HomeContract {
         void showError(String message);
         void openRoom(Bundle args);
         void showRoomCreation();
+        void openAuth();
         void showNewAvailable();
         void hideNewAvailable();
     }

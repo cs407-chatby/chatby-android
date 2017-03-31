@@ -5,6 +5,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.ui.ActionButtonListener;
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupFab();
-        setupBackstack();
+        setupBackStack();
     }
 
     protected void setupFab() {
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    protected void setupBackstack() {
+    protected void setupBackStack() {
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
                 setTitle("ChatBy");
