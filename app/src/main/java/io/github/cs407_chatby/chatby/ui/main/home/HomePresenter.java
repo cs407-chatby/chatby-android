@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
+import io.github.cs407_chatby.chatby.ui.auth.AuthHolder;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -18,14 +19,16 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private final LocationManager locationManager;
     private final ChatByService service;
+    private final AuthHolder authHolder;
 
     @Nullable
     private HomeContract.View view = null;
 
     @Inject
-    public HomePresenter(LocationManager locationManager, ChatByService service) {
+    public HomePresenter(LocationManager locationManager, ChatByService service, AuthHolder authHolder) {
         this.locationManager = locationManager;
         this.service = service;
+        this.authHolder = authHolder;
     }
 
     @Override
@@ -88,11 +91,20 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void onLogout() {
-
+        authHolder.deleteToken();
+        if (view != null)
+            view.openAuth();
     }
 
     @Override
     public void onDeleteAccount() {
+        service.getCurrentUser()
+                .flatMapCompletable(user -> service.deleteUser(user.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onLogout, error -> {
+                    if (view != null)
+                        view.showError("Failed to delete account!");
+                });
 
     }
 }
