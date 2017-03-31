@@ -68,6 +68,21 @@ public class MemberListPresenter implements MemberListContract.Presenter {
 
     @Override
     public void onDeletePressed(ResourceUrl memberUrl) {
-        // TODO delete member from room
+        service.getMembershipsForUserInRoom(memberUrl.getId(), room.getId())
+                .flatMap(memberships -> {
+                    for (Membership m : memberships) {
+                        Throwable t = service.deleteMembership(m.getId()).blockingGet();
+                        if (t != null)
+                            throw new RuntimeException(t);
+                    }
+                    return service.getUser(memberUrl.getId());
+                })
+                .subscribe(user -> {
+                    if (view != null)
+                        view.showMemberDeleted(user);
+                }, error -> {
+                    if (view != null)
+                        view.showError("Failed to delete member!");
+                });
     }
 }
