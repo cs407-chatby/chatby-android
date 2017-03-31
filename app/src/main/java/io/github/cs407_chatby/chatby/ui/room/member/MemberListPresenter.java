@@ -2,7 +2,6 @@ package io.github.cs407_chatby.chatby.ui.room.member;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -51,7 +50,7 @@ public class MemberListPresenter implements MemberListContract.Presenter {
         service.getMembershipsForRoom(room.getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(memberships -> {
-                    List<User> userList = new ArrayList<User>();
+                    List<User> userList = new ArrayList<>();
                     for (Membership m : memberships) {
                         userList.add(service.getUser(m.getUser().getId()).blockingGet());
                     }

@@ -88,8 +88,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
         MemberViewHolder(View itemView) {
             super(itemView);
-            name = ViewUtils.findView(itemView, R.id.name);
-            delete = ViewUtils.findView(itemView, R.id.delete);
+            name = ViewUtils.findView(itemView, R.id.text_name);
+            delete = ViewUtils.findView(itemView, R.id.button_remove);
         }
     }
 

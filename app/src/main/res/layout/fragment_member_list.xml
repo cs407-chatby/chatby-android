@@ -2,11 +2,15 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:background="@color/off_white"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context="io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/member_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/layout_member"
+        app:layoutManager="LinearLayoutManager"/>
 
 </FrameLayout>
