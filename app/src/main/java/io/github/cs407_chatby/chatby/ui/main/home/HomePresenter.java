@@ -107,4 +107,17 @@ public class HomePresenter implements HomeContract.Presenter {
                 });
 
     }
+
+    @Override
+    public void onAccountSettingsPressed() {
+        service.getCurrentUser()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                        if (view != null) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("user", new Gson().toJson(user));
+                            view.openAccount(bundle);
+                        }
+                });
+    }
 }

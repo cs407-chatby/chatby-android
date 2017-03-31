@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
+import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
@@ -20,7 +21,7 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class AccountFragment extends Fragment implements AccountContract.View {
 
-    @Inject AccountContract.Presenter presenter;
+    @Inject AccountPresenter presenter;
 
     EditText email;
     EditText username;
@@ -34,6 +35,7 @@ public class AccountFragment extends Fragment implements AccountContract.View {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         if (getArguments() != null) {
             String json = getArguments().getString("user");

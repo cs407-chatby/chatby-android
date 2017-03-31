@@ -1,8 +1,13 @@
 package io.github.cs407_chatby.chatby.ui.main.account;
 
 
+import javax.inject.Inject;
+
 public class AccountPresenter implements AccountContract.Presenter {
     AccountContract.View view;
+
+    @Inject
+    public AccountPresenter() {}
 
     @Override
     public void onAttach(AccountContract.View view) {

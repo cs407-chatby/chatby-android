@@ -24,6 +24,7 @@ import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.ui.ActionButtonListener;
 import io.github.cs407_chatby.chatby.ui.auth.AuthActivity;
+import io.github.cs407_chatby.chatby.ui.main.account.AccountActivity;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
@@ -104,6 +105,11 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     }
 
     @Override
+    public void openAccount(Bundle args) {
+        ActivityUtils.start(getActivity(), AccountActivity.class, args, false);
+    }
+
+    @Override
     public void showRoomCreation() {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -149,6 +155,9 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_account_settings: {
+                if (presenter != null) presenter.onAccountSettingsPressed();
+            }
             case R.id.action_logout: {
                 if (presenter != null) presenter.onLogout();
                 return true;

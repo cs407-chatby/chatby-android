@@ -17,6 +17,7 @@ class HomeContract {
         void onInitialize();
         void onLogout();
         void onDeleteAccount();
+        void onAccountSettingsPressed();
     }
 
     interface View {
@@ -24,6 +25,7 @@ class HomeContract {
         void updateNearby(List<Room> rooms);
         void showError(String message);
         void openRoom(Bundle args);
+        void openAccount(Bundle args);
         void showRoomCreation();
         void openAuth();
         void showNewAvailable();
