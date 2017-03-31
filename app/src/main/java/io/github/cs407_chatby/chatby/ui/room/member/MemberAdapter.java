@@ -8,9 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -29,9 +27,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     @Inject public MemberAdapter() {}
 
     public void setMembers(@NonNull List<User> members) {
-        Set<User> memberSet = new HashSet<>(members);
-        this.members.clear();
-        this.members.addAll(memberSet);
+        //Set<User> memberSet = new HashSet<>(members);
+        //this.members.clear();
+        //this.members.addAll(memberSet);
+        this.members = members;
         notifyDataSetChanged();
     }
 

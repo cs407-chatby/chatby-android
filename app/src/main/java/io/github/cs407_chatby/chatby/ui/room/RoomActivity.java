@@ -27,14 +27,26 @@ public class RoomActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (actionBar != null)
+                    actionBar.setHomeAsUpIndicator(R.drawable.ic_close_24dp);
+            } else {
+                if (actionBar != null)
+                    actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_24dp);
+            }
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getSupportFragmentManager().popBackStack();
+                    return true;
+                }
                 else return false;
             }
             default: return super.onOptionsItemSelected(item);

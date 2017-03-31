@@ -1,15 +1,12 @@
 package io.github.cs407_chatby.chatby.ui.room.member;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.Membership;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
-import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
@@ -48,20 +45,16 @@ public class MemberListPresenter implements MemberListContract.Presenter {
                 });
 
         service.getMembershipsForRoom(room.getId())
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+                .flatMapSingle(membership -> service.getUser(membership.getUser().getId()))
+                .distinct()
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(memberships -> {
-                    List<User> userList = new ArrayList<>();
-                    for (Membership m : memberships) {
-                        userList.add(service.getUser(m.getUser().getId()).blockingGet());
-                    }
-                    return userList;
-                })
                 .subscribe(users -> {
-                    if (view != null)
-                        view.showMembers(users);
+                    if (view != null) view.showMembers(users);
                 }, error -> {
-                    if (view != null)
-                        view.showError("Failed to get member list!");
+                    if (view != null) view.showError("Failed to get member list!");
                 });
     }
 

@@ -4,15 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="56dp">
+    android:layout_height="72dp"
+    android:foreground="?android:selectableItemBackground">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_pic"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_account_circle_24dp"/>
 
     <TextView
         android:id="@+id/text_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="32dp"
         android:gravity="center_vertical"
-        android:layout_alignParentStart="true"
+        android:layout_toEndOf="@+id/profile_pic"
         android:layout_toStartOf="@+id/button_remove"
         android:textSize="20sp"
         android:textColor="@color/off_black"
@@ -23,8 +32,16 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
         android:textColor="?attr/colorAccent"
         android:text="@string/remove"
         style="?android:borderlessButtonStyle"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1px"
+        android:layout_alignBottom="@+id/text_name"
+        android:layout_alignStart="@+id/text_name"
+        android:background="@color/grey"/>
 
 </RelativeLayout>
