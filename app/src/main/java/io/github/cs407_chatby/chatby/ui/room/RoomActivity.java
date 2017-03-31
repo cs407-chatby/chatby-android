@@ -28,7 +28,9 @@ public class RoomActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
+
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            invalidateOptionsMenu();
             if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 if (actionBar != null)
                     actionBar.setHomeAsUpIndicator(R.drawable.ic_close_24dp);

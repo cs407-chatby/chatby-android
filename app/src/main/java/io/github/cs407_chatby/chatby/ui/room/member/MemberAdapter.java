@@ -27,16 +27,13 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     @Inject public MemberAdapter() {}
 
     public void setMembers(@NonNull List<User> members) {
-        //Set<User> memberSet = new HashSet<>(members);
-        //this.members.clear();
-        //this.members.addAll(memberSet);
         this.members = members;
         notifyDataSetChanged();
     }
 
     public void removeMember(User user) {
         int index = members.indexOf(user);
-        if (index > 0) {
+        if (index >= 0) {
             members.remove(index);
             notifyItemRemoved(index);
         }

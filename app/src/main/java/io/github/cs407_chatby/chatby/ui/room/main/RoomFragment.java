@@ -179,7 +179,8 @@ public class RoomFragment extends Fragment implements RoomContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_room, menu);
+        int count = getActivity().getSupportFragmentManager().getBackStackEntryCount();
+        if (count == 0) inflater.inflate(R.menu.menu_room, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

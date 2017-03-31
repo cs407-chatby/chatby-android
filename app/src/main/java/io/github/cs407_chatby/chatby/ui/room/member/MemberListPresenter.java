@@ -2,7 +2,6 @@ package io.github.cs407_chatby.chatby.ui.room.member;
 
 import javax.inject.Inject;
 
-import io.github.cs407_chatby.chatby.data.model.Membership;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
@@ -63,20 +62,14 @@ public class MemberListPresenter implements MemberListContract.Presenter {
     @Override
     public void onDeletePressed(ResourceUrl memberUrl) {
         service.getMembershipsForUserInRoom(memberUrl.getId(), room.getId())
-                .flatMap(memberships -> {
-                    for (Membership m : memberships) {
-                        Throwable t = service.deleteMembership(m.getId()).blockingGet();
-                        if (t != null)
-                            throw new RuntimeException(t);
-                    }
-                    return service.getUser(memberUrl.getId());
-                })
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+                .flatMapSingle(membership -> service.deleteMembership(membership.getId())
+                        .andThen(service.getUser(membership.getUser().getId())))
                 .subscribe(user -> {
-                    if (view != null)
-                        view.showMemberDeleted(user);
+                    if (view != null) view.showMemberDeleted(user);
                 }, error -> {
-                    if (view != null)
-                        view.showError("Failed to delete member!");
+                    if (view != null) view.showError("Failed to delete member!");
                 });
     }
 }
