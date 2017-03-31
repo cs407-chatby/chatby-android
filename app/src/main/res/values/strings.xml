@@ -31,4 +31,9 @@
     <string name="action_leave">Leave Room</string>
     <string name="action_logout">Logout</string>
     <string name="action_delete_account">Delete Account</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="username">Username</string>
+    <string name="save">Save</string>
+    <string name="update_pass">Update Password</string>
 </resources>

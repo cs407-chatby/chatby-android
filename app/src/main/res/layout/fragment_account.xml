@@ -1,12 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.account.AccountFragment"
-    tools:showIn="@layout/activity_account">
+    android:padding="16dp"
+    android:orientation="vertical"
+    tools:context=".ui.main.account.AccountFragment">
 
+    <EditText
+        android:id="@+id/edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_email"
+        android:padding="16dp"
+        android:inputType="textEmailAddress"/>
 
-</android.support.constraint.ConstraintLayout>
+    <EditText
+        android:id="@+id/edit_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:hint="@string/username"/>
+
+    <EditText
+        android:id="@+id/edit_first_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:hint="@string/first_name"/>
+
+    <EditText
+        android:id="@+id/edit_last_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:hint="@string/last_name"/>
+
+    <Button
+        android:id="@+id/button_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="@color/white"
+        android:text="@string/save"/>
+
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_password"
+        android:layout_marginTop="72dp"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/button_save_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="@color/white"
+        android:text="@string/update_pass"/>
+
+</LinearLayout>

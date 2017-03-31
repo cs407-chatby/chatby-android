@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.ui.auth.AuthFragment;
-import io.github.cs407_chatby.chatby.ui.account.AccountFragment;
+import io.github.cs407_chatby.chatby.ui.main.account.AccountFragment;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
 import io.github.cs407_chatby.chatby.ui.main.home.HomeFragment;
 import io.github.cs407_chatby.chatby.ui.room.RoomFragment;
