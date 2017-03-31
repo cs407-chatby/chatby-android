@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:layout_margin="8dp">
+    android:layout_height="56dp">
 
     <TextView
         android:id="@+id/text_name"
@@ -22,7 +21,7 @@
     <Button
         android:id="@+id/button_remove"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:textColor="?attr/colorAccent"
         android:text="@string/remove"
