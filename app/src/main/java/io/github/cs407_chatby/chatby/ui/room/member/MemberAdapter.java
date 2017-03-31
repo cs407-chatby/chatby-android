@@ -35,8 +35,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
         int index = members.indexOf(user);
         if (index >= 0) {
             members.remove(index);
-            notifyItemRemoved(index);
         }
+        notifyDataSetChanged();
     }
 
     public void setListener(OnDeleteClickedListener listener) {

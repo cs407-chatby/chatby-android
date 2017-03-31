@@ -52,6 +52,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public void setMessages(@NonNull List<ViewMessage> messages) {
         this.messages = messages;
+        this.messages.sort((o1, o2) -> {
+            long t = o1.getCreationTime().getTime() - o2.getCreationTime().getTime();
+            if (t < 0) return -1;
+            else if (t > 0) return 1;
+            else return 0;
+        });
         notifyDataSetChanged();
     }
 
