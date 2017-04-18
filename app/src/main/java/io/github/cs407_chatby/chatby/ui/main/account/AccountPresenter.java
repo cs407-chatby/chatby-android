@@ -67,8 +67,15 @@ public class AccountPresenter implements AccountContract.Presenter {
 
     @Override
     public void onUpdateName(String name) {
-        String first = name.substring(0, name.indexOf(' '));
-        String last = name.substring(name.indexOf(' '));
+        int split = name.indexOf(' ');
+        String first, last;
+        if (split < 0) {
+            first = name;
+            last = "";
+        } else {
+            first = name.substring(0, split);
+            last = name.substring(split);
+        }
         service.getCurrentUser()
                 .flatMap(user -> service.putUser(user.getId(),
                         user.withFirstName(first).withLastName(last)))

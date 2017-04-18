@@ -1,6 +1,7 @@
 package io.github.cs407_chatby.chatby.ui.room.main;
 
 import android.os.Bundle;
+import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -37,10 +38,9 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class RoomFragment extends Fragment implements RoomContract.View {
 
-    @Inject
-    RoomPresenter presenter;
-    @Inject
-    MessageAdapter adapter;
+    @Inject RoomPresenter presenter;
+    @Inject MessageAdapter adapter;
+    @MenuRes int menuLayout = R.menu.menu_room;
     Room room;
 
     RecyclerView messageList;
@@ -155,6 +155,8 @@ public class RoomFragment extends Fragment implements RoomContract.View {
                 .setDuration(300)
                 .withEndAction(() -> joinButton.setVisibility(View.GONE))
                 .start();
+        menuLayout = R.menu.menu_joined_room;
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -169,6 +171,8 @@ public class RoomFragment extends Fragment implements RoomContract.View {
                 .setDuration(300)
                 .withStartAction(() -> joinButton.setVisibility(View.VISIBLE))
                 .start();
+        menuLayout = R.menu.menu_room;
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -180,7 +184,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         int count = getActivity().getSupportFragmentManager().getBackStackEntryCount();
-        if (count == 0) inflater.inflate(R.menu.menu_room, menu);
+        if (count == 0) inflater.inflate(menuLayout, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

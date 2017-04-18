@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String CREATE_FRAGMENT = "Create Fragment";
 
+    View root;
     ViewPager pager;
     FrameLayout createFrame;
     FloatingActionButton fab;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        root = findViewById(R.id.main_root);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         getSupportFragmentManager()
@@ -84,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         bottomBar.setSelectedItemId(R.id.action_nearby);
+
+        pager.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            int deltaY = scrollY - oldScrollY;
+            if (deltaY > 0) {
+                bottomBar.animate().translationY(200).setDuration(200).start();
+            } else {
+                bottomBar.animate().translationY(0).setDuration(200).start();
+            }
+        });
     }
 
     private void showNearby() {
@@ -104,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
     private void showRoomCreation() {
         int fabX = Float.valueOf(fab.getX() + (fab.getWidth() / 2)).intValue();
         int fabY = Float.valueOf(fab.getY() + (fab.getHeight() / 2)).intValue();
-        float size = (float) Math.hypot(createFrame.getHeight(), createFrame.getWidth());
+        float size = (float) Math.hypot(root.getHeight(), root.getWidth());
         createFrame.setVisibility(View.VISIBLE);
         Animator animator = createCircularReveal(createFrame, fabX, fabY, 0, size)
-                .setDuration(200);
+                .setDuration(400);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.start();
         fab.setVisibility(View.INVISIBLE);
@@ -119,9 +130,9 @@ public class MainActivity extends AppCompatActivity {
         if (createFrame.getVisibility() == View.VISIBLE) {
             int fabX = Float.valueOf(fab.getX() + (fab.getWidth() / 2)).intValue();
             int fabY = Float.valueOf(fab.getY() + (fab.getHeight() / 2)).intValue();
-            float size = (float) Math.hypot(createFrame.getHeight(), createFrame.getWidth());
+            float size = (float) Math.hypot(root.getHeight(), root.getWidth());
             Animator animator = ViewAnimationUtils.createCircularReveal(createFrame, fabX, fabY, size, 0)
-                    .setDuration(200);
+                    .setDuration(400);
             animator.setInterpolator(new AccelerateInterpolator());
             animator.addListener(new Animator.AnimatorListener() {
                 @Override

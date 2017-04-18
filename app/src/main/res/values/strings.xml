@@ -41,7 +41,7 @@
     <string name="action_members">View Members</string>
     <string name="account">Account</string>
     <string name="active">Active</string>
-    <string name="favorite">Starred</string>
+    <string name="favorite">Favorite</string>
     <string name="sort">Sort</string>
     <string name="location">Location</string>
     <string name="popularity">Popularity</string>
@@ -51,4 +51,5 @@
     <string name="hint_username">Username</string>
     <string name="name_email">Full Name</string>
     <string name="change_password">Change Password</string>
+    <string name="add_to_favorites">Add to Favorites</string>
 </resources>

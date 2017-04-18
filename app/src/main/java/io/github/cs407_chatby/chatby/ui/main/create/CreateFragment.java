@@ -81,7 +81,6 @@ public class CreateFragment extends Fragment implements CreateContract.View {
     private void clearText() {
         title.setText("");
         radius.setText("");
-        date.setText("");
     }
 
     @Override
