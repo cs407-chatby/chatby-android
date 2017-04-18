@@ -1,14 +1,18 @@
 package io.github.cs407_chatby.chatby.ui.main.create;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,16 +26,18 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
-import io.github.cs407_chatby.chatby.ui.ActionButtonListener;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 
-public class CreateFragment extends Fragment implements CreateContract.View, ActionButtonListener {
+public class CreateFragment extends Fragment implements CreateContract.View {
 
     EditText title;
     EditText radius;
     TextView date;
     Button pickDate;
+    Toolbar toolbar;
+
+    FloatingActionButton fab;
 
     @Inject
     @Nullable
@@ -46,6 +52,22 @@ public class CreateFragment extends Fragment implements CreateContract.View, Act
         radius = ViewUtils.findView(view, R.id.radius);
         date = ViewUtils.findView(view, R.id.date);
         pickDate = ViewUtils.findView(view, R.id.pick_date);
+        toolbar = ViewUtils.findView(view, R.id.create_toolbar);
+        fab = ViewUtils.findView(view, R.id.fab);
+
+        fab.setOnClickListener(v -> {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(radius.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(title.getWindowToken(), 0);
+            if (presenter != null)
+                presenter.onFinalizeClicked(title.getText().toString(),
+                        radius.getText().toString());
+        });
+
+        toolbar.setNavigationOnClickListener(v -> {
+            getActivity().onBackPressed();
+            clearText();
+        });
 
         if (pickDate != null) {
             pickDate.setOnClickListener(v -> {
@@ -54,6 +76,12 @@ public class CreateFragment extends Fragment implements CreateContract.View, Act
         }
 
         return view;
+    }
+
+    private void clearText() {
+        title.setText("");
+        radius.setText("");
+        date.setText("");
     }
 
     @Override
@@ -70,7 +98,8 @@ public class CreateFragment extends Fragment implements CreateContract.View, Act
 
     @Override
     public void showSuccess() {
-        getActivity().getSupportFragmentManager().popBackStack();
+        getActivity().onBackPressed();
+        clearText();
     }
 
     @Override
@@ -112,11 +141,5 @@ public class CreateFragment extends Fragment implements CreateContract.View, Act
         CreateFragment fragment = new CreateFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void actionButtonClicked(View view) {
-        if (presenter != null)
-            presenter.onFinalizeClicked(title.getText().toString(), radius.getText().toString());
     }
 }

@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.ui.model;
+package io.github.cs407_chatby.chatby.ui.viewModel;
 
 import java.util.Collections;
 import java.util.Date;

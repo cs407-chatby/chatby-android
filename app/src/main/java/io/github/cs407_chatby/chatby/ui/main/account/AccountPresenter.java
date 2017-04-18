@@ -33,19 +33,55 @@ public class AccountPresenter implements AccountContract.Presenter {
     }
 
     @Override
-    public void onSavePressed(String email, String username, String firstName, String lastName) {
+    public void onRefresh() {
         service.getCurrentUser()
-                .flatMap(user -> service.putUser(user.getId(), user
-                        .withEmail(email)
-                        .withUsername(username)
-                        .withFirstName(firstName)
-                        .withLastName(lastName)))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(user -> view.showSuccess(), error -> view.showError("Failed to update user!"));
+                .subscribe(user -> {
+                    if (view != null) view.updateInfo(user);
+                });
     }
 
     @Override
-    public void onUpdatePassPressed(String password) {
+    public void onUpdateEmail(String email) {
+        service.getCurrentUser()
+                .flatMap(user -> service.putUser(user.getId(), user.withEmail(email)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    if (view != null) view.updateInfo(user);
+                }, error -> {
+                    if (view != null) view.showError("Failed to update email");
+                });
+    }
+
+    @Override
+    public void onUpdateUsername(String username) {
+        service.getCurrentUser()
+                .flatMap(user -> service.putUser(user.getId(), user.withUsername(username)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    if (view != null) view.updateInfo(user);
+                }, error -> {
+                    if (view != null) view.showError("Failed to update username");
+                });
+    }
+
+    @Override
+    public void onUpdateName(String name) {
+        String first = name.substring(0, name.indexOf(' '));
+        String last = name.substring(name.indexOf(' '));
+        service.getCurrentUser()
+                .flatMap(user -> service.putUser(user.getId(),
+                        user.withFirstName(first).withLastName(last)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    if (view != null) view.updateInfo(user);
+                }, error -> {
+                    if (view != null) view.showError("Failed to update name");
+                });
+    }
+
+    @Override
+    public void onUpdatePassword(String password) {
         service.getCurrentUser()
                 .flatMap(user -> service.patchUserPassword(user.getId(), new PatchPassword(password)))
                 .map(user -> {
@@ -54,9 +90,27 @@ public class AccountPresenter implements AccountContract.Presenter {
                 })
                 .flatMap(user -> service.postAuth(new AuthRequest(user.getUsername(), password)))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(authResponse -> {
-                    authHolder.saveToken(authResponse.getToken());
-                    view.showSuccess();
-                }, error -> view.showError("Failed to update password!"));
+                .subscribe(response -> {
+                    authHolder.saveToken(response.getToken());
+                }, error -> {
+                    if (view != null) view.showError("Failed to update password");
+                });
+    }
+
+    @Override
+    public void onLogout() {
+        authHolder.deleteToken();
+        if (view != null) view.showLoggedOut();
+    }
+
+    @Override
+    public void onDeleteAccount() {
+        service.getCurrentUser()
+                .flatMapCompletable(user -> service.deleteUser(user.getId()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onLogout, error -> {
+                    if (view != null)
+                        view.showError("Failed to delete account!");
+                });
     }
 }

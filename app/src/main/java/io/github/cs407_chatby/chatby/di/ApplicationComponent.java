@@ -10,8 +10,9 @@ import dagger.Component;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.ui.auth.AuthFragment;
 import io.github.cs407_chatby.chatby.ui.main.account.AccountFragment;
+import io.github.cs407_chatby.chatby.ui.main.active.ActiveFragment;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
-import io.github.cs407_chatby.chatby.ui.main.home.HomeFragment;
+import io.github.cs407_chatby.chatby.ui.main.nearby.NearbyFragment;
 import io.github.cs407_chatby.chatby.ui.room.main.RoomFragment;
 import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 
@@ -20,11 +21,12 @@ import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 public interface ApplicationComponent {
     void inject(ChatByApp application);
     void inject(AuthFragment fragment);
-    void inject(HomeFragment fragment);
+    void inject(NearbyFragment fragment);
     void inject(CreateFragment fragment);
     void inject(RoomFragment fragment);
     void inject(MemberListFragment fragment);
     void inject(AccountFragment fragment);
+    void inject(ActiveFragment fragment);
 
     @Named("Application")
     Context getContext();

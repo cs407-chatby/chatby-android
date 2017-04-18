@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.ui;
+package io.github.cs407_chatby.chatby.ui.callbacks;
 
 
 import android.view.View;

@@ -30,7 +30,7 @@ import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
-import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
+import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;

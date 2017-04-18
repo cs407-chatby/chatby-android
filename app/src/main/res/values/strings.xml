@@ -13,7 +13,7 @@
     <string name="default_counter">+1</string>
     <string name="time_remaining">Time Remaining</string>
     <string name="created">Created</string>
-    <string name="Nearby">Nearby</string>
+    <string name="nearby">Nearby</string>
     <string name="title">Title</string>
     <string name="radius">Radius (km)</string>
     <string name="lat">Latitude</string>
@@ -39,4 +39,16 @@
     <string name="account_settings">Account Settings</string>
     <string name="remove">Remove</string>
     <string name="action_members">View Members</string>
+    <string name="account">Account</string>
+    <string name="active">Active</string>
+    <string name="favorite">Starred</string>
+    <string name="sort">Sort</string>
+    <string name="location">Location</string>
+    <string name="popularity">Popularity</string>
+    <string name="rooms_in">" rooms in "</string>
+    <string name="default_location_text">Nearby Areas</string>
+    <string name="edit">Edit</string>
+    <string name="hint_username">Username</string>
+    <string name="name_email">Full Name</string>
+    <string name="change_password">Change Password</string>
 </resources>

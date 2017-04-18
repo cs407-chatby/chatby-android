@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.User;
-import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
+import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 
@@ -24,8 +24,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private OnLikeClickedListener listener;
     private List<ViewMessage> messages = new ArrayList<>();
     private User currentUser;
-
-    int activePosition = -1;
+    private int activePosition = -1;
 
     @Inject
     public MessageAdapter() {}

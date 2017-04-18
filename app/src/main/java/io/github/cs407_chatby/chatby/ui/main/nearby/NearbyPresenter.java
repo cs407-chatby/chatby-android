@@ -1,11 +1,14 @@
-package io.github.cs407_chatby.chatby.ui.main.home;
+package io.github.cs407_chatby.chatby.ui.main.nearby;
 
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 
-import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -15,24 +18,30 @@ import io.github.cs407_chatby.chatby.ui.auth.AuthHolder;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class HomePresenter implements HomeContract.Presenter {
+public class NearbyPresenter implements NearbyContract.Presenter {
 
     private final LocationManager locationManager;
     private final ChatByService service;
     private final AuthHolder authHolder;
+    private final Geocoder geocoder;
+
+    private Location location;
 
     @Nullable
-    private HomeContract.View view = null;
+    private NearbyContract.View view = null;
+    private NearbyContract.SortOrder sortOrder = NearbyContract.SortOrder.Location;
 
     @Inject
-    public HomePresenter(LocationManager locationManager, ChatByService service, AuthHolder authHolder) {
+    public NearbyPresenter(LocationManager locationManager, ChatByService service,
+                           AuthHolder authHolder, Geocoder geocoder) {
         this.locationManager = locationManager;
         this.service = service;
         this.authHolder = authHolder;
+        this.geocoder = geocoder;
     }
 
     @Override
-    public void onAttach(HomeContract.View view) {
+    public void onAttach(NearbyContract.View view) {
         this.view = view;
         locationManager.start();
     }
@@ -59,33 +68,58 @@ public class HomePresenter implements HomeContract.Presenter {
         if (view != null) view.openRoom(bundle);
     }
 
+    private double getDistance(double alat, double blat, double alng, double blng) {
+        double deltaLat = alat - blat;
+        double deltaLng = alng - blng;
+        return Math.pow(Math.pow(deltaLat, 2) + Math.pow(deltaLng, 2), 0.5);
+    }
+
     @Override
-    public void onInitialize() {
+    public void onRefresh() {
         if (view != null) {
-            view.updateCreated(Collections.emptyList());
-            view.updateNearby(Collections.emptyList());
+            view.showSortOrder(sortOrder);
+            view.showLoading();
         }
 
         locationManager.getObservable()
+                .doOnNext(loc -> location = loc)
                 .flatMapSingle(loc -> service.getRooms(loc.getLatitude(), loc.getLongitude()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rooms -> {
-                    if (view != null)
-                        view.updateNearby(rooms);
+                    rooms.sort((a, b) -> {
+                        switch (sortOrder) {
+                            case Popularity:
+                                return b.getMembers().size() - a.getMembers().size();
+                            default: {
+                                double aDistance = getDistance(location.getLatitude(), a.getLatitude(),
+                                        location.getLongitude(), b.getLongitude());
+                                double bDistance = getDistance(location.getLatitude(), b.getLatitude(),
+                                        location.getLongitude(), b.getLongitude());
+                                Double diff = aDistance - bDistance;
+                                return diff.intValue();
+                            }
+                        }
+                    });
+                    if (view != null) view.updateRooms(rooms);
                 }, error -> {
                     if (view != null)
                         view.showError("Failed to get nearby rooms!");
                 });
 
-        service.getCurrentUser()
-                .flatMap(user -> service.getRooms(user.getUrl().getId()))
+        locationManager.getObservable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(rooms -> {
-                    if (view != null)
-                        view.updateCreated(rooms);
+                .subscribe(loc -> {
+                    List<Address> addressList = geocoder.getFromLocation(
+                            loc.getLatitude(), loc.getLongitude(), 1);
+                    if (!addressList.isEmpty() && view != null)
+                        view.showLocation(addressList.get(0));
+                    else
+                        view.showLocation(null);
                 }, error -> {
-                    if (view != null)
-                        view.showError("Failed to get created rooms!");
+                    if (view != null) {
+                        view.showLocation(null);
+                        view.showError("Failed to name location.");
+                    }
                 });
     }
 
@@ -105,7 +139,6 @@ public class HomePresenter implements HomeContract.Presenter {
                     if (view != null)
                         view.showError("Failed to delete account!");
                 });
-
     }
 
     @Override
@@ -122,5 +155,17 @@ public class HomePresenter implements HomeContract.Presenter {
                     if (view != null)
                         view.showError("Failed to get current user");
                 });
+    }
+
+    @Override
+    public void onSortByLocationClicked() {
+        sortOrder = NearbyContract.SortOrder.Location;
+        if (view != null) onRefresh();
+    }
+
+    @Override
+    public void onSortByPopularityClicked() {
+        sortOrder = NearbyContract.SortOrder.Popularity;
+        if (view != null) onRefresh();
     }
 }

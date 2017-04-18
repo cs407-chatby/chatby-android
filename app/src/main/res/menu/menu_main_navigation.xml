@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_nearby"
+        android:title="@string/nearby"
+        android:icon="@drawable/ic_radar_24dp"/>
+    <item
+        android:id="@+id/action_active"
+        android:title="@string/active"
+        android:icon="@drawable/ic_inbox_24dp"/>
+    <item
+        android:id="@+id/action_account"
+        android:title="@string/account"
+        android:icon="@drawable/ic_account_24dp"/>
+</menu>

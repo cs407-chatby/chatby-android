@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -26,8 +25,10 @@ public class ActivityUtils {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
+    @NonNull
     public static <V extends View> V findView(@NonNull Activity activity, @IdRes int id) {
+        View view = activity.findViewById(id);
+        assert view != null;
         return (V) activity.findViewById(id);
     }
 

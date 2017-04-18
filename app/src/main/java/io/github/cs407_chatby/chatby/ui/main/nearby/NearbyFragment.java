@@ -1,19 +1,22 @@
-package io.github.cs407_chatby.chatby.ui.main.home;
+package io.github.cs407_chatby.chatby.ui.main.nearby;
 
 
+import android.location.Address;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -22,26 +25,31 @@ import javax.inject.Inject;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
-import io.github.cs407_chatby.chatby.ui.ActionButtonListener;
 import io.github.cs407_chatby.chatby.ui.auth.AuthActivity;
+import io.github.cs407_chatby.chatby.ui.callbacks.ActionButtonListener;
+import io.github.cs407_chatby.chatby.ui.callbacks.ScrollDirectionListener;
+import io.github.cs407_chatby.chatby.ui.main.RoomAdapter;
 import io.github.cs407_chatby.chatby.ui.main.account.AccountActivity;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
-public class HomeFragment extends Fragment implements HomeContract.View, ActionButtonListener {
+public class NearbyFragment extends Fragment implements NearbyContract.View, ActionButtonListener {
 
     RecyclerView roomList;
+    CardView sortChip;
+    CardView localChip;
+    TextView sortText;
+    TextView localText;
+    View chips;
 
     @Inject
     @Nullable
-    HomePresenter presenter;
+    NearbyPresenter presenter;
 
-    RoomAdapter roomAdapter = new RoomAdapter(room -> {
-        if (presenter != null)
-            presenter.onRoomClicked(room);
-    });
+    @Inject
+    RoomAdapter roomAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,15 +61,45 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_nearby, container, false);
         ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
 
-        roomList = ViewUtils.findView(view, R.id.list_created);
-        Log.d("HomeFragment", "Creating view");
+        // Set views
+        roomList = ViewUtils.findView(view, R.id.list_nearby);
+        sortChip = ViewUtils.findView(view, R.id.sort_chip);
+        localChip = ViewUtils.findView(view, R.id.location_chip);
+        sortText = ViewUtils.findView(view, R.id.sort_text);
+        localText = ViewUtils.findView(view, R.id.local_text);
+        chips = ViewUtils.findView(view, R.id.chips);
+
+        roomList.clearOnScrollListeners();
+        roomList.addOnScrollListener(new ScrollDirectionListener() {
+            @Override
+            public void onScrollUp() {
+                chips.animate()
+                        .translationY(0)
+                        .setInterpolator(new DecelerateInterpolator())
+                        .setDuration(150)
+                        .start();
+            }
+
+            @Override
+            public void onScrollDown() {
+                chips.animate()
+                        .translationY(-200)
+                        .setInterpolator(new AccelerateInterpolator())
+                        .setDuration(150)
+                        .start();
+            }
+        });
+
         if (roomList != null) {
+            roomAdapter.setListener(room -> {
+                if (presenter != null) presenter.onRoomClicked(room);
+            });
             roomList.setAdapter(roomAdapter);
-            Log.d("HomeFragment", "Adapter set");
         }
+
         return view;
     }
 
@@ -74,7 +112,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter != null) presenter.onInitialize();
+        if (presenter != null) presenter.onRefresh();
     }
 
     @Override
@@ -84,19 +122,37 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
     }
 
     @Override
-    public void updateCreated(List<Room> rooms) {
-        roomAdapter.setCreated(rooms);
+    public void updateRooms(List<Room> rooms) {
+        roomAdapter.setRooms(rooms);
     }
 
     @Override
-    public void updateNearby(List<Room> rooms) {
-        roomAdapter.setNearby(rooms);
+    public void showLoading() {
+
     }
 
     @Override
     public void showError(String message) {
         if (getView() != null)
             Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showLocation(Address address) {
+        if (address == null) {
+            localText.setText(R.string.default_location_text);
+            return;
+        }
+        String city = address.getLocality();
+        String state = address.getAdminArea();
+        String text = city + ", " + state;
+        localText.setText(text);
+    }
+
+    @Override
+    public void showSortOrder(NearbyContract.SortOrder order) {
+        sortText.setText(order.title);
+
     }
 
     @Override
@@ -124,19 +180,9 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
         ActivityUtils.start(getActivity(), AuthActivity.class, null, true);
     }
 
-    @Override
-    public void showNewAvailable() {
-        // TODO Sprint 2-3
-    }
-
-    @Override
-    public void hideNewAvailable() {
-        // TODO Sprint 2-3
-    }
-
-    public static HomeFragment newInstance() {
+    public static NearbyFragment newInstance() {
         Bundle args = new Bundle();
-        HomeFragment fragment = new HomeFragment();
+        NearbyFragment fragment = new NearbyFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -148,28 +194,18 @@ public class HomeFragment extends Fragment implements HomeContract.View, ActionB
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_home, menu);
+        inflater.inflate(R.menu.menu_nearby, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_account_settings:
-                if (presenter != null) presenter.onAccountSettingsPressed();
+            case R.id.action_sort_location:
+                if (presenter != null) presenter.onSortByLocationClicked();
                 return true;
-            case R.id.action_logout:
-                if (presenter != null) presenter.onLogout();
-                return true;
-            case R.id.action_delete_account:
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Delete Account")
-                        .setMessage("Are you sure you want to delete your account?")
-                        .setPositiveButton("Delete", (dialog, which) -> {
-                            if (presenter != null) presenter.onDeleteAccount();
-                        })
-                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                        .show();
+            case R.id.action_sort_popularity:
+                if (presenter != null) presenter.onSortByPopularityClicked();
                 return true;
             default: return super.onOptionsItemSelected(item);
         }

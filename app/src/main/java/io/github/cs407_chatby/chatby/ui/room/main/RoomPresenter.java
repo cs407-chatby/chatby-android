@@ -13,7 +13,7 @@ import io.github.cs407_chatby.chatby.data.model.PostMembership;
 import io.github.cs407_chatby.chatby.data.model.PostMessage;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
+import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 

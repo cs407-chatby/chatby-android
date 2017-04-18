@@ -2,12 +2,13 @@ package io.github.cs407_chatby.chatby.di;
 
 import android.app.Application;
 import android.content.Context;
+import android.location.Geocoder;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Locale;
 
 import javax.inject.Named;
 
@@ -18,7 +19,6 @@ import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.auth.AuthInterceptor;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
@@ -55,6 +55,11 @@ public class ApplicationModule {
                 .registerTypeAdapter(ResourceUrl.class, new ResourceUrl.Adapter())
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ")
                 .create();
+    }
+
+    @Provides
+    public Geocoder provideGeocoder() {
+        return new Geocoder(app, Locale.US);
     }
 
     @Provides

@@ -5,7 +5,7 @@ import java.util.List;
 
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
-import io.github.cs407_chatby.chatby.ui.model.ViewMessage;
+import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 
 public class RoomContract {
 
