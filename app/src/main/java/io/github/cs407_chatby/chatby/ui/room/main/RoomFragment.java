@@ -41,6 +41,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Inject RoomPresenter presenter;
     @Inject MessageAdapter adapter;
     @MenuRes int menuLayout = R.menu.menu_room;
+    boolean starred = false;
     Room room;
 
     RecyclerView messageList;
@@ -149,6 +150,18 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     }
 
     @Override
+    public void showStarred() {
+        starred = true;
+        getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public void showNotStarred() {
+        starred = false;
+        getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
     public void showJoined() {
         joinButton.animate()
                 .translationY((float) ActivityUtils.dpToPixel(getActivity(), 64))
@@ -181,10 +194,18 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         adapter.setCurrentUser(user);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         int count = getActivity().getSupportFragmentManager().getBackStackEntryCount();
-        if (count == 0) inflater.inflate(menuLayout, menu);
+        if (count == 0) {
+            inflater.inflate(menuLayout, menu);
+            MenuItem item = menu.findItem(R.id.action_star);
+            if (menu != null && starred)
+                item.setTitle("Remove from Favorites");
+            else if (menu != null)
+                item.setTitle("Add to Favorites");
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -200,6 +221,10 @@ public class RoomFragment extends Fragment implements RoomContract.View {
                         .setBreadCrumbShortTitle("Members")
                         .addToBackStack(null)
                         .commit();
+                return true;
+            }
+            case R.id.action_star: {
+                presenter.onRoomStarClicked();
                 return true;
             }
             case R.id.action_leave: {

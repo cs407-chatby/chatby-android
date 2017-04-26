@@ -17,7 +17,7 @@ import dagger.Provides;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.ui.auth.AuthInterceptor;
+import io.github.cs407_chatby.chatby.data.AuthInterceptor;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

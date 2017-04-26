@@ -103,6 +103,11 @@ public class RoomPresenter implements RoomContract.Presenter {
                 }, error -> liking = false);
     }
 
+    @Override
+    public void onRoomStarClicked() {
+        // TODO
+    }
+
     private void dislike(ViewMessage dislikedMessage, Like like) {
         service.deleteLike(like.getId())
                 .andThen(service.getMessage(dislikedMessage.getId()))

@@ -3,7 +3,6 @@ package io.github.cs407_chatby.chatby.ui.auth;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
+import io.github.cs407_chatby.chatby.di.auth.AuthModule;
 import io.github.cs407_chatby.chatby.ui.main.MainActivity;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
@@ -32,15 +32,16 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
     View progressBar;
     View dimBackdrop;
 
-    @Inject
-    @Nullable
-    AuthPresenter presenter;
+    @Inject AuthPresenter presenter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auth, container, false);
-        ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
+        ChatByApp.get(getContext())
+                .getComponent()
+                .plus(new AuthModule((AuthActivity) getActivity()))
+                .inject(this);
 
         // Init views
         email = (EditText) view.findViewById(R.id.form_email);
@@ -52,21 +53,15 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
         dimBackdrop = view.findViewById(R.id.dim_backdrop);
 
         // Click handlers
-        switchForm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (presenter != null) presenter.onSwitchForms();
-            }
+        switchForm.setOnClickListener(v -> {
+            if (presenter != null) presenter.onSwitchForms();
         });
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (presenter != null) presenter.onSubmit(
-                        email.getText().toString(),
-                        password.getText().toString(),
-                        passConfirm.getText().toString()
-                );
-            }
+        submit.setOnClickListener(v -> {
+            if (presenter != null) presenter.onSubmit(
+                    email.getText().toString(),
+                    password.getText().toString(),
+                    passConfirm.getText().toString()
+            );
         });
 
         return view;

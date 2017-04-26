@@ -1,4 +1,4 @@
-package io.github.cs407_chatby.chatby.ui.auth;
+package io.github.cs407_chatby.chatby.data;
 
 import java.io.IOException;
 

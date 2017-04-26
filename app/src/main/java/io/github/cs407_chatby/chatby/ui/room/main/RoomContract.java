@@ -16,6 +16,7 @@ public class RoomContract {
         void onDetach();
         void onSendPressed(String message);
         void onMessageLikePressed(ViewMessage likedMessage);
+        void onRoomStarClicked();
         void onJoinRoomPressed();
         void onLeaveRoomPressed();
     }
@@ -28,6 +29,8 @@ public class RoomContract {
         void showLoading();
         void hideLoading();
         void showEmpty();
+        void showStarred();
+        void showNotStarred();
         void showJoined();
         void showJoining();
         void showNotJoined();

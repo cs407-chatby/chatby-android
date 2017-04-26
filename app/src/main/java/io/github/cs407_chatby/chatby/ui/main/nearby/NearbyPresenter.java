@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.ui.auth.AuthHolder;
+import io.github.cs407_chatby.chatby.data.AuthHolder;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 

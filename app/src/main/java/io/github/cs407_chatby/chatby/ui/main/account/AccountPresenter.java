@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
 import io.github.cs407_chatby.chatby.data.model.PatchPassword;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.ui.auth.AuthHolder;
+import io.github.cs407_chatby.chatby.data.AuthHolder;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class AccountPresenter implements AccountContract.Presenter {

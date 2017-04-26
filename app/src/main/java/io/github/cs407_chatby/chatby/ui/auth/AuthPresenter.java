@@ -6,11 +6,14 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
+import io.github.cs407_chatby.chatby.data.AuthHolder;
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
 import io.github.cs407_chatby.chatby.data.model.PostUser;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
+import io.github.cs407_chatby.chatby.di.PerActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
+@PerActivity
 class AuthPresenter implements AuthContract.Presenter {
 
     private final AuthHolder authHolder;

@@ -19,11 +19,6 @@ import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 
 public class AuthActivity extends AppCompatActivity {
 
-    @Inject @Named("Application")
-    Context context;
-
-    private ActivityComponent activityComponent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,16 +35,6 @@ public class AuthActivity extends AppCompatActivity {
         if (!fineLocation) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
-    }
-
-    public ActivityComponent getActivityComponent() {
-        if (activityComponent == null) {
-            activityComponent = DaggerActivityComponent.builder()
-                    .activityModule(new ActivityModule(this))
-                    .applicationComponent(ChatByApp.get(this).getComponent())
-                    .build();
-        }
-        return activityComponent;
     }
 
     @Override
