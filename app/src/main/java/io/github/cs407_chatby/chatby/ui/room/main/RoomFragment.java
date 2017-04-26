@@ -48,6 +48,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     TextView expirationText;
     Button joinButton;
     ProgressBar progressBar;
+    View emptyView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +68,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         expirationText = ViewUtils.findView(view, R.id.expiration_text);
         joinButton = ViewUtils.findView(view, R.id.join_button);
         progressBar = ViewUtils.findView(view, R.id.loading_view);
+        emptyView = ViewUtils.findView(view, R.id.empty_view);
 
         joinButton.setOnClickListener(v -> presenter.onJoinRoomPressed());
         sendButton.setOnClickListener(v -> presenter.onSendPressed(messageForm.getText().toString()));
@@ -106,6 +108,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
 
     @Override
     public void showMessages(List<ViewMessage> messages) {
+        messageList.setVisibility(View.VISIBLE);
         adapter.setMessages(messages);
     }
 
@@ -130,18 +133,14 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Override
     public void showLoading() {
         messageList.setVisibility(View.INVISIBLE);
+        emptyView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideLoading() {
-        messageList.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
     public void showEmpty() {
-        showError("No messages yet");
+        messageList.setVisibility(View.INVISIBLE);
+        emptyView.setVisibility(View.VISIBLE);
     }
 
     @Override

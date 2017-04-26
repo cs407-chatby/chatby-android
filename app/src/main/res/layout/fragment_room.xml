@@ -54,8 +54,11 @@
         android:id="@+id/loading_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
+        android:layout_centerInParent="true"/>
+
+    <include
+        android:id="@+id/empty_view"
+        layout="@layout/layout_no_messages" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/message_list"
@@ -63,6 +66,7 @@
         android:layout_height="match_parent"
         android:paddingBottom="72dp"
         android:clipToPadding="false"
+        android:background="@color/off_white"
         app:reverseLayout="true"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/layout_message"/>

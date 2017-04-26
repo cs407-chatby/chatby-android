@@ -74,7 +74,6 @@ public class RoomPresenter implements RoomContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(messages -> {
                     if (view == null) return;
-                    view.hideLoading();
                     if (messages.size() > 0)
                         view.showMessages(messages);
                     else view.showEmpty();

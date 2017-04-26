@@ -28,7 +28,6 @@ public class RoomContract {
         void showMessageUpdated(ViewMessage message);
         void showError(String error);
         void showLoading();
-        void hideLoading();
         void showEmpty();
         void showStarred();
         void showNotStarred();
