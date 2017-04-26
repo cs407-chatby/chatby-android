@@ -19,8 +19,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -31,8 +29,9 @@ import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
-import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
+import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
+import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.github.cs407_chatby.chatby.utils.ActivityUtils;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
@@ -42,7 +41,6 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Inject MessageAdapter adapter;
     @MenuRes int menuLayout = R.menu.menu_room;
     boolean starred = false;
-    Room room;
 
     RecyclerView messageList;
     EditText messageForm;
@@ -61,11 +59,6 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
-
-        if (getArguments() != null) {
-            String json = getArguments().getString("room");
-            if (json != null) room = new Gson().fromJson(json, Room.class);
-        }
 
         View view = inflater.inflate(R.layout.fragment_room, container, false);
         messageList = ViewUtils.findView(view, R.id.message_list);
@@ -87,26 +80,28 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     @Override
     public void onStart() {
         super.onStart();
-        if (room != null) {
-            getActivity().setTitle(room.getName());
-            SimpleDateFormat formatter = new SimpleDateFormat("MMM d 'at' h:mm", Locale.US);
-            expirationText.setText(formatter.format(room.getExpireTime()));
-            if (presenter != null) presenter.onAttach(this, room);
-        }
-        Log.d("Room", "onStart");
+        presenter.onAttach(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter != null) presenter.onInitialize();
-        Log.d("Room", "onResume");
+        Bundle args = getArguments();
+        if (args != null && presenter != null)
+            presenter.onInitialize(args.getInt(RoomActivity.ROOM_ID));
     }
 
     @Override
     public void onStop() {
         if (presenter != null) presenter.onDetach();
         super.onStop();
+    }
+
+    @Override
+    public void showRoom(Room room) {
+        getActivity().setTitle(room.getName());
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM d 'at' h:mm", Locale.US);
+        expirationText.setText(formatter.format(room.getExpireTime()));
     }
 
     @Override
@@ -194,16 +189,15 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         adapter.setCurrentUser(user);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         int count = getActivity().getSupportFragmentManager().getBackStackEntryCount();
         if (count == 0) {
             inflater.inflate(menuLayout, menu);
             MenuItem item = menu.findItem(R.id.action_star);
-            if (menu != null && starred)
+            if (item != null && starred)
                 item.setTitle("Remove from Favorites");
-            else if (menu != null)
+            else if (item != null)
                 item.setTitle("Add to Favorites");
         }
         super.onCreateOptionsMenu(menu, inflater);

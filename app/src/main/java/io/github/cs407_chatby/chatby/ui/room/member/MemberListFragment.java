@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.google.gson.Gson;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,57 +18,56 @@ import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class MemberListFragment extends Fragment implements MemberListContract.View {
 
-    @Inject
-    MemberListPresenter presenter;
-    @Inject
-    MemberAdapter adapter;
+    @Inject MemberListPresenter presenter;
+    @Inject MemberAdapter adapter;
 
     RecyclerView memberList;
     ProgressBar progressBar;
-    Room room;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((ChatByApp) getActivity().getApplication()).getComponent().inject(this);
-        room = new Gson().fromJson(getArguments().getString("room"), Room.class);
+
         View view = inflater.inflate(R.layout.fragment_member_list, container, false);
         memberList = ViewUtils.findView(view, R.id.member_list);
         progressBar = ViewUtils.findView(view, R.id.progress_bar);
-        if (memberList != null && adapter != null) {
-            adapter.setOwner(room.getCreatedBy().getId());
-            adapter.setListener(user -> {
-                if (presenter != null) presenter.onDeletePressed(user.getUrl());
-            });
-            memberList.setAdapter(adapter);
-        }
+
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (room != null) {
-            if (presenter != null) presenter.onAttach(this, room);
-            getActivity().setTitle("Members of " + room.getName());
-        }
+        if (presenter != null) presenter.onAttach(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (presenter != null) presenter.onInitialize();
+        Bundle args = getArguments();
+        if (args != null && presenter != null)
+            presenter.onInitialize(args.getInt(RoomActivity.ROOM_ID));
     }
 
     @Override
     public void onStop() {
         if (presenter != null) presenter.onDetach();
-        if (room != null) getActivity().setTitle(room.getName());
         super.onStop();
+    }
+
+    @Override
+    public void showRoom(Room room) {
+        adapter.setOwner(room.getCreatedBy().getId());
+        adapter.setListener(user -> {
+            if (presenter != null) presenter.onDeletePressed(user.getUrl());
+        });
+        memberList.setAdapter(adapter);
     }
 
     @Override

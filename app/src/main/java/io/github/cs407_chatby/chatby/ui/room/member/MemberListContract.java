@@ -10,13 +10,14 @@ import io.github.cs407_chatby.chatby.data.model.User;
 public class MemberListContract {
 
     public interface Presenter {
-        void onAttach(View view, Room room);
+        void onAttach(View view);
         void onDetach();
-        void onInitialize();
+        void onInitialize(int roomId);
         void onDeletePressed(ResourceUrl memberUrl);
     }
 
     public interface View {
+        void showRoom(Room room);
         void showMembers(List<User> members);
         void showLoading();
         void showError(String error);

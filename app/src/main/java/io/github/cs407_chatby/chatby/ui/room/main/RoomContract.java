@@ -11,8 +11,8 @@ public class RoomContract {
 
 
     public interface Presenter {
-        void onAttach(View view, Room room);
-        void onInitialize();
+        void onAttach(View view);
+        void onInitialize(int roomId);
         void onDetach();
         void onSendPressed(String message);
         void onMessageLikePressed(ViewMessage likedMessage);
@@ -22,6 +22,7 @@ public class RoomContract {
     }
 
     public interface View {
+        void showRoom(Room room);
         void showMessages(List<ViewMessage> messages);
         void showMessageSent(ViewMessage message);
         void showMessageUpdated(ViewMessage message);

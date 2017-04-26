@@ -20,9 +20,8 @@ public class MemberListPresenter implements MemberListContract.Presenter {
     }
 
     @Override
-    public void onAttach(MemberListContract.View view, Room room) {
+    public void onAttach(MemberListContract.View view) {
         this.view = view;
-        this.room = room;
     }
 
     @Override
@@ -32,9 +31,20 @@ public class MemberListPresenter implements MemberListContract.Presenter {
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(int roomId) {
         if (view != null) view.showLoading();
 
+        service.getRoom(roomId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(room -> {
+                    this.room = room;
+                    if (view != null) view.showRoom(room);
+                    loadUserInfo();
+                    loadMemberships();
+                });
+    }
+
+    private void loadUserInfo() {
         service.getCurrentUser()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
@@ -44,7 +54,9 @@ public class MemberListPresenter implements MemberListContract.Presenter {
                     if (view != null)
                         view.showError("Failed to get current user!");
                 });
+    }
 
+    private void loadMemberships() {
         service.getMembershipsForRoom(room.getId())
                 .toObservable()
                 .flatMap(Observable::fromIterable)

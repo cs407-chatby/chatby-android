@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:paddingBottom="152dp"
         android:clipToPadding="false"
-        android:background="@color/white"
+        android:background="@color/off_white"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/layout_room"/>
 

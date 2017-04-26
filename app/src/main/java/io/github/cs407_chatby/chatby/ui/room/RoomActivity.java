@@ -11,6 +11,8 @@ import io.github.cs407_chatby.chatby.ui.room.main.RoomFragment;
 
 public class RoomActivity extends AppCompatActivity {
 
+    public static final String ROOM_ID = "RoomId";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

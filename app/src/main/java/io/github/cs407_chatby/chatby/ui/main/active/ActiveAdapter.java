@@ -21,9 +21,9 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class ActiveAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Room> created = new ArrayList<>();
-    private List<Room> favorite = new ArrayList<>();
-    private List<Room> active = new ArrayList<>();
+    private List<Room> list1 = new ArrayList<>();
+    private List<Room> list2 = new ArrayList<>();
+    private List<Room> list3 = new ArrayList<>();
 
     private RoomAdapter.Listener listener = room -> {};
 
@@ -31,17 +31,17 @@ public class ActiveAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public ActiveAdapter() {}
 
     public void setCreated(List<Room> created) {
-        this.created = created;
+        this.list2 = created;
         notifyDataSetChanged();
     }
 
     public void setFavorite(List<Room> favorite) {
-        this.favorite = favorite;
+        this.list1 = favorite;
         notifyDataSetChanged();
     }
 
     public void setActive(List<Room> active) {
-        this.active = active;
+        this.list3 = active;
         notifyDataSetChanged();
     }
 
@@ -51,38 +51,66 @@ public class ActiveAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == R.layout.layout_room)
-            return new RoomAdapter.RoomViewHolder(ViewUtils.inflate(parent, viewType));
-        return new HeaderViewHolder(ViewUtils.inflate(parent, viewType));
+        View view = ViewUtils.inflate(parent, viewType);
+        if (viewType == R.layout.layout_room) return new RoomAdapter.RoomViewHolder(view);
+        else if (viewType == R.layout.layout_no_rooms) return new EmptyViewHolder(view);
+        return new HeaderViewHolder(view);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        int createdStart = 0;
-        int favoriteStart = created.size() + 1;
-        int activeStart = favoriteStart + favorite.size() + 1;
+        int start1 = 0;
+        int start2 = Math.max(list1.size(), 1) + 1;
+        int start3 = start2 + Math.max(list2.size(), 1) + 1;
 
         boolean end = false;
 
-        if (position == createdStart) {
-            ((HeaderViewHolder) holder).icon.setBackgroundResource(R.drawable.ic_created_24dp);
-            ((HeaderViewHolder) holder).title.setText("Created");
-        } else if (position < favoriteStart) {
-            if (position == favoriteStart - 1) end = true;
-            bindRoom((RoomAdapter.RoomViewHolder) holder, created.get(position - 1), end);
-        } else if (position == favoriteStart) {
-            ((HeaderViewHolder) holder).icon.setBackgroundResource(R.drawable.ic_stars_24dp);
-            ((HeaderViewHolder) holder).title.setText("Starred");
-        } else if (position < activeStart) {
-            if (position == activeStart - 1) end = true;
-            bindRoom((RoomAdapter.RoomViewHolder) holder, created.get(position - (favoriteStart + 1)), end);
-        } else if (position == activeStart) {
-            ((HeaderViewHolder) holder).icon.setBackgroundResource(R.drawable.ic_inbox_24dp);
-            ((HeaderViewHolder) holder).title.setText("Active");
-        } else {
-            if (position == getItemCount() - 1) end = true;
-            bindRoom((RoomAdapter.RoomViewHolder) holder, created.get(position - (activeStart + 1)), end);
+        if (holder instanceof HeaderViewHolder) {
+
+            HeaderViewHolder h = (HeaderViewHolder) holder;
+
+            if (position == start1) {
+                h.icon.setBackgroundResource(R.drawable.ic_stars_24dp);
+                h.title.setText("Favorite");
+            } else if (position == start2) {
+                h.icon.setBackgroundResource(R.drawable.ic_created_24dp);
+                h.title.setText("Created");
+            } else {
+                h.icon.setBackgroundResource(R.drawable.ic_inbox_24dp);
+                h.title.setText("Active");
+            }
+
+        } else if (holder instanceof EmptyViewHolder) {
+
+            EmptyViewHolder h = (EmptyViewHolder) holder;
+
+            if (position < start2) {
+                h.title.setText("No favorite rooms");
+                h.explanation.setText("Rooms added to favorites will show here.");
+            } else if (position < start3) {
+                h.title.setText("No created rooms");
+                h.explanation.setText("Rooms that you create will show here.");
+            } else {
+                h.title.setText("No other active rooms");
+                h.explanation.setText("Any other rooms that you have joined will show here.");
+            }
+
+        } else if (holder instanceof RoomAdapter.RoomViewHolder) {
+
+            RoomAdapter.RoomViewHolder h = (RoomAdapter.RoomViewHolder) holder;
+
+            if (position < start2) {
+                if (position == start2 - 1) end = true;
+                bindRoom(h, list1.get(position - 1), end);
+            } else if (position < start3) {
+                if (position == start3 - 1) end = true;
+                bindRoom(h, list2.get(position - (start2 + 1)), end);
+            } else {
+                if (position == getItemCount() - 1) end = true;
+                bindRoom(h, list3.get(position - (start3 + 1)), end);
+            }
+
         }
     }
 
@@ -103,19 +131,23 @@ public class ActiveAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemCount() {
-        return Math.max(created.size(), 0) + Math.max(favorite.size() , 0) + Math.max(active.size(), 0) + 3;
+        return Math.max(list1.size(), 1) + Math.max(list2.size() , 1) + Math.max(list3.size(), 1) + 3;
     }
 
     @Override
     public int getItemViewType(int position) {
-        int createdStart = 0;
-        int favoriteStart = created.size() + 1;
-        int activeStart = favoriteStart + favorite.size() + 1;
+        int start1 = 0;
+        int start2 = Math.max(list1.size(), 1) + 1;
+        int start3 = start2 + Math.max(list2.size(), 1) + 1;
 
-        if (position == createdStart || position == favoriteStart || position == activeStart) {
+        if (position == start1 || position == start2 || position == start3) {
             return R.layout.layout_header;
-        } else {
+        } else if ((position < start2 && list1.size() > position - 1)
+                || (position > start2 && position < start3 && list2.size() > (position - (start2 + 1)))
+                || (position > start3 && list3.size() > (position - (start3 + 1)))) {
             return R.layout.layout_room;
+        } else {
+            return R.layout.layout_no_rooms;
         }
     }
 
@@ -127,6 +159,17 @@ public class ActiveAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             super(itemView);
             icon = ViewUtils.findView(itemView, R.id.icon);
             title = ViewUtils.findView(itemView, R.id.title);
+        }
+    }
+
+    public static class EmptyViewHolder extends RecyclerView.ViewHolder {
+        public TextView title;
+        public TextView explanation;
+
+        public EmptyViewHolder(View itemView) {
+            super(itemView);
+            title = ViewUtils.findView(itemView, R.id.title);
+            explanation = ViewUtils.findView(itemView, R.id.explanation);
         }
     }
 }

@@ -31,15 +31,25 @@ public class RoomPresenter implements RoomContract.Presenter {
     }
 
     @Override
-    public void onAttach(@NonNull RoomContract.View view, Room room) {
+    public void onAttach(@NonNull RoomContract.View view) {
         this.view = view;
-        this.room = room;
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(int roomId) {
         view.showLoading();
 
+        service.getRoom(roomId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(room -> {
+                    this.room = room;
+                    if (view != null) view.showRoom(room);
+                    loadUserInfo();
+                    loadMessages();
+                });
+    }
+
+    private void loadUserInfo() {
         service.getCurrentUser()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
@@ -52,7 +62,9 @@ public class RoomPresenter implements RoomContract.Presenter {
                                 else view.showNotJoined();
                             }, error -> view.showNotJoined());
                 }, error -> view.showNotJoined());
+    }
 
+    private void loadMessages() {
         service.getMessages(room.getId())
                 .toObservable()
                 .flatMap(Observable::fromIterable)
@@ -106,6 +118,7 @@ public class RoomPresenter implements RoomContract.Presenter {
     @Override
     public void onRoomStarClicked() {
         // TODO
+        if (view != null) view.showStarred();
     }
 
     private void dislike(ViewMessage dislikedMessage, Like like) {

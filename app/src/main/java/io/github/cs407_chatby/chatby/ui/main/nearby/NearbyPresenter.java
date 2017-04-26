@@ -12,9 +12,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.cs407_chatby.chatby.data.AuthHolder;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.data.AuthHolder;
+import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -62,9 +63,7 @@ public class NearbyPresenter implements NearbyContract.Presenter {
     @Override
     public void onRoomClicked(Room room) {
         Bundle bundle = new Bundle();
-        Gson gson = new Gson();
-        String json = gson.toJson(room);
-        bundle.putString("room", json);
+        bundle.putInt(RoomActivity.ROOM_ID, room.getId());
         if (view != null) view.openRoom(bundle);
     }
 
