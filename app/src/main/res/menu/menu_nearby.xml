@@ -12,12 +12,10 @@
         <menu>
             <item
                 android:id="@+id/action_sort_location"
-                android:title="@string/location"
-                app:showAsAction="never"/>
+                android:title="@string/location"/>
             <item
                 android:id="@+id/action_sort_popularity"
-                android:title="@string/popularity"
-                app:showAsAction="never"/>
+                android:title="@string/popularity"/>
         </menu>
     </item>
 </menu>

@@ -17,8 +17,6 @@ class NearbyContract {
         void onRoomClicked(Room room);
         void onRefresh();
         void onLogout();
-        void onDeleteAccount();
-        void onAccountSettingsPressed();
         void onSortByLocationClicked();
         void onSortByPopularityClicked();
     }
@@ -26,6 +24,7 @@ class NearbyContract {
     interface View {
         void updateRooms(List<Room> rooms);
         void showLoading();
+        void showEmpty();
         void showError(String message);
         void showLocation(Address address);
         void showSortOrder(SortOrder order);

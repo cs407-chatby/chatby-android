@@ -38,6 +38,8 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 public class NearbyFragment extends Fragment implements NearbyContract.View, ActionButtonListener {
 
     RecyclerView roomList;
+    View loadingView;
+    View emptyView;
     CardView sortChip;
     CardView localChip;
     TextView sortText;
@@ -66,6 +68,8 @@ public class NearbyFragment extends Fragment implements NearbyContract.View, Act
 
         // Set views
         roomList = ViewUtils.findView(view, R.id.list_nearby);
+        loadingView = ViewUtils.findView(view, R.id.loading_view);
+        emptyView = ViewUtils.findView(view, R.id.empty_view);
         sortChip = ViewUtils.findView(view, R.id.sort_chip);
         localChip = ViewUtils.findView(view, R.id.location_chip);
         sortText = ViewUtils.findView(view, R.id.sort_text);
@@ -130,6 +134,13 @@ public class NearbyFragment extends Fragment implements NearbyContract.View, Act
     @Override
     public void showLoading() {
         roomList.setVisibility(View.INVISIBLE);
+        emptyView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showEmpty() {
+        roomList.setVisibility(View.INVISIBLE);
+        emptyView.setVisibility(View.VISIBLE);
     }
 
     @Override

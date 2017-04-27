@@ -7,8 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,6 +17,7 @@ import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -28,7 +28,9 @@ public class NearbyPresenter implements NearbyContract.Presenter {
     private final AuthHolder authHolder;
     private final Geocoder geocoder;
 
-    private Location location;
+    private Address address = null;
+    private Location location = null;
+    private List<Room> rooms = new ArrayList<>();
 
     @Nullable
     private NearbyContract.View view = null;
@@ -75,50 +77,81 @@ public class NearbyPresenter implements NearbyContract.Presenter {
         return Math.pow(Math.pow(deltaLat, 2) + Math.pow(deltaLng, 2), 0.5);
     }
 
+    private boolean checkForChange(List<Room> roomUpdate) {
+        if (rooms.isEmpty() || rooms.size() != roomUpdate.size())
+            return true;
+        for (int i = 0; i < rooms.size(); i++) {
+            if (!rooms.get(i).equals(roomUpdate.get(i)))
+                return true;
+        }
+        return false;
+    }
+
+    private List<Room> sortRooms(List<Room> rooms) {
+        rooms.sort((a, b) -> {
+            if (sortOrder.equals(NearbyContract.SortOrder.Popularity)) {
+                return b.getMembers().size() - a.getMembers().size();
+            } else {
+                double aDistance = getDistance(location.getLatitude(), a.getLatitude(),
+                        location.getLongitude(), b.getLongitude());
+                double bDistance = getDistance(location.getLatitude(), b.getLatitude(),
+                        location.getLongitude(), b.getLongitude());
+                Double diff = aDistance - bDistance;
+                return diff.intValue();
+            }
+        });
+        return rooms;
+    }
+
+    private boolean checkForChangedAddress(Address address) {
+        if (this.address == null) return true;
+        boolean localityChange = !this.address.getLocality().equals(address.getLocality());
+        boolean adminChange = !this.address.getAdminArea().equals(address.getAdminArea());
+        return localityChange || adminChange;
+    }
+
     @Override
     public void onRefresh() {
         if (view != null) {
             view.showSortOrder(sortOrder);
             view.showLoading();
         }
+        this.rooms.clear();
 
-        locationManager.getObservable()
-                .doOnNext(loc -> location = loc)
+        Observable<Location> getLocation = locationManager.getObservable()
+                .doOnNext(loc -> location = loc);
+
+        getLocation
                 .flatMapSingle(loc -> service.getRooms(loc.getLatitude(), loc.getLongitude()))
+                .flatMap(rooms -> Observable.just(sortRooms(rooms)))
+                .filter(this::checkForChange)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rooms -> {
                     Log.d("Refresh", rooms.size() + " Rooms found.");
-
-                    rooms.sort((a, b) -> {
-                        if (sortOrder.equals(NearbyContract.SortOrder.Popularity)) {
-                            return b.getMembers().size() - a.getMembers().size();
-                        } else {
-                            double aDistance = getDistance(location.getLatitude(), a.getLatitude(),
-                                    location.getLongitude(), b.getLongitude());
-                            double bDistance = getDistance(location.getLatitude(), b.getLatitude(),
-                                    location.getLongitude(), b.getLongitude());
-                            Double diff = aDistance - bDistance;
-                            return diff.intValue();
-                        }
-                    });
-
-                    if (view != null) view.updateRooms(rooms);
+                    this.rooms = rooms;
+                    if (view != null && rooms.size() == 0) view.showEmpty();
+                    else if (view != null) view.updateRooms(rooms);
                 }, error -> {
                     if (view != null)
                         view.showError("Failed to get nearby rooms!");
                 });
 
-        locationManager.getObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loc -> {
+        getLocation
+                .flatMap(loc -> {
                     List<Address> addressList = geocoder.getFromLocation(
                             loc.getLatitude(), loc.getLongitude(), 1);
-                    if (!addressList.isEmpty() && view != null)
-                        view.showLocation(addressList.get(0));
-                    else
-                        view.showLocation(null);
+                    return Observable.just(addressList);
+                })
+                .filter(addresses -> !addresses.isEmpty())
+                .flatMap(addresses -> Observable.just(addresses.get(0)))
+                .filter(this::checkForChangedAddress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(address -> {
+                    Log.d("Refresh", address.toString());
+                    this.address = address;
+                    if (view != null) view.showLocation(address);
                 }, error -> {
                     if (view != null) {
                         view.showLocation(null);
@@ -132,35 +165,6 @@ public class NearbyPresenter implements NearbyContract.Presenter {
         authHolder.deleteToken();
         if (view != null)
             view.openAuth();
-    }
-
-    @Override
-    public void onDeleteAccount() {
-        service.getCurrentUser()
-                .flatMapCompletable(user -> service.deleteUser(user.getId()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onLogout, error -> {
-                    if (view != null)
-                        view.showError("Failed to delete account!");
-                });
-    }
-
-    @Override
-    public void onAccountSettingsPressed() {
-        service.getCurrentUser()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(user -> {
-                    if (view != null) {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("user", new Gson().toJson(user));
-                        view.openAccount(bundle);
-                    }
-                }, error -> {
-                    if (view != null)
-                        view.showError("Failed to get current user");
-                });
     }
 
     @Override
