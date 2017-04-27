@@ -1,5 +1,9 @@
 package io.github.cs407_chatby.chatby.ui.room.main;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
@@ -29,6 +33,7 @@ import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.model.User;
+import io.github.cs407_chatby.chatby.firebase.MessagingService;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.ui.room.member.MemberListFragment;
 import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
@@ -49,6 +54,15 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     Button joinButton;
     ProgressBar progressBar;
     View emptyView;
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle args = getArguments();
+            if (args != null && presenter != null)
+                presenter.onInitialize(args.getInt(RoomActivity.ROOM_ID));
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,6 +97,8 @@ public class RoomFragment extends Fragment implements RoomContract.View {
     public void onStart() {
         super.onStart();
         presenter.onAttach(this);
+        getActivity().registerReceiver(receiver,
+                new IntentFilter(MessagingService.ACTION_MESSAGE_RECEIVED));
     }
 
     @Override
@@ -95,6 +111,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
 
     @Override
     public void onStop() {
+        getActivity().unregisterReceiver(receiver);
         if (presenter != null) presenter.onDetach();
         super.onStop();
     }
@@ -114,6 +131,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
 
     @Override
     public void showMessageSent(ViewMessage message) {
+        messageList.setVisibility(View.VISIBLE);
         adapter.addMessage(message);
         messageForm.setText("");
         messageList.scrollToPosition(0);

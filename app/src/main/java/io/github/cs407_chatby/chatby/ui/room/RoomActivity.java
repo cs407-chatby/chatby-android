@@ -23,7 +23,7 @@ public class RoomActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.frame, RoomFragment.newInstance(getIntent().getExtras()))
+                    .replace(R.id.frame, RoomFragment.newInstance(getIntent().getExtras()), "Room")
                     .commit();
         }
 
@@ -51,7 +51,10 @@ public class RoomActivity extends AppCompatActivity {
                     getSupportFragmentManager().popBackStack();
                     return true;
                 }
-                else return false;
+                else {
+                    onBackPressed();
+                    return true;
+                }
             }
             default: return super.onOptionsItemSelected(item);
         }

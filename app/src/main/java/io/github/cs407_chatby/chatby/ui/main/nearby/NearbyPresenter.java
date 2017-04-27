@@ -5,6 +5,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -18,6 +19,7 @@ import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class NearbyPresenter implements NearbyContract.Presenter {
 
@@ -83,22 +85,24 @@ public class NearbyPresenter implements NearbyContract.Presenter {
         locationManager.getObservable()
                 .doOnNext(loc -> location = loc)
                 .flatMapSingle(loc -> service.getRooms(loc.getLatitude(), loc.getLongitude()))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rooms -> {
+                    Log.d("Refresh", rooms.size() + " Rooms found.");
+
                     rooms.sort((a, b) -> {
-                        switch (sortOrder) {
-                            case Popularity:
-                                return b.getMembers().size() - a.getMembers().size();
-                            default: {
-                                double aDistance = getDistance(location.getLatitude(), a.getLatitude(),
-                                        location.getLongitude(), b.getLongitude());
-                                double bDistance = getDistance(location.getLatitude(), b.getLatitude(),
-                                        location.getLongitude(), b.getLongitude());
-                                Double diff = aDistance - bDistance;
-                                return diff.intValue();
-                            }
+                        if (sortOrder.equals(NearbyContract.SortOrder.Popularity)) {
+                            return b.getMembers().size() - a.getMembers().size();
+                        } else {
+                            double aDistance = getDistance(location.getLatitude(), a.getLatitude(),
+                                    location.getLongitude(), b.getLongitude());
+                            double bDistance = getDistance(location.getLatitude(), b.getLatitude(),
+                                    location.getLongitude(), b.getLongitude());
+                            Double diff = aDistance - bDistance;
+                            return diff.intValue();
                         }
                     });
+
                     if (view != null) view.updateRooms(rooms);
                 }, error -> {
                     if (view != null)
@@ -106,6 +110,7 @@ public class NearbyPresenter implements NearbyContract.Presenter {
                 });
 
         locationManager.getObservable()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loc -> {
                     List<Address> addressList = geocoder.getFromLocation(
@@ -133,6 +138,7 @@ public class NearbyPresenter implements NearbyContract.Presenter {
     public void onDeleteAccount() {
         service.getCurrentUser()
                 .flatMapCompletable(user -> service.deleteUser(user.getId()))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onLogout, error -> {
                     if (view != null)
@@ -143,6 +149,7 @@ public class NearbyPresenter implements NearbyContract.Presenter {
     @Override
     public void onAccountSettingsPressed() {
         service.getCurrentUser()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) {
@@ -159,12 +166,12 @@ public class NearbyPresenter implements NearbyContract.Presenter {
     @Override
     public void onSortByLocationClicked() {
         sortOrder = NearbyContract.SortOrder.Location;
-        if (view != null) onRefresh();
+        onRefresh();
     }
 
     @Override
     public void onSortByPopularityClicked() {
         sortOrder = NearbyContract.SortOrder.Popularity;
-        if (view != null) onRefresh();
+        onRefresh();
     }
 }

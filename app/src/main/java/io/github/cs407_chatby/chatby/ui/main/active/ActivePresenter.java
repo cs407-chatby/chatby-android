@@ -14,6 +14,7 @@ import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class ActivePresenter implements ActiveContract.Presenter {
     private ActiveContract.View view;
@@ -62,6 +63,7 @@ public class ActivePresenter implements ActiveContract.Presenter {
                     else if(a.getCreationTime().before(b.getCreationTime())) return 1;
                     else return 0;
                 })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rooms -> {
                     List<Room> created = new ArrayList<>();

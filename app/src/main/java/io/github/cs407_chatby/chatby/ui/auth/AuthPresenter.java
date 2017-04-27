@@ -7,6 +7,7 @@ import android.util.Log;
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.AuthHolder;
+import io.github.cs407_chatby.chatby.data.CurrentUserCache;
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
 import io.github.cs407_chatby.chatby.data.model.PostUser;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
@@ -17,20 +18,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 class AuthPresenter implements AuthContract.Presenter {
 
     private final AuthHolder authHolder;
-
     private final ChatByService service;
+    private final CurrentUserCache userCache;
 
     @Nullable
     private AuthContract.View view = null;
-
     private boolean working = false;
-
     private AuthContract.Form formType = AuthContract.Form.Login;
 
     @Inject
-    public AuthPresenter(ChatByService service, AuthHolder authHolder) {
+    public AuthPresenter(ChatByService service, AuthHolder authHolder, CurrentUserCache userCache) {
         this.service = service;
         this.authHolder = authHolder;
+        this.userCache = userCache;
     }
 
     @Override
@@ -108,11 +108,16 @@ class AuthPresenter implements AuthContract.Presenter {
     }
 
     private void showSuccess() {
-        if (view != null && working) {
-            view.hideLoading();
-            view.showLoggedIn();
-            working = false;
-        }
+        service.getCurrentUser()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    userCache.setCurrentUser(user);
+                    if (view != null && working) {
+                        view.hideLoading();
+                        view.showLoggedIn();
+                        working = false;
+                    }
+                });
     }
 
     @Override

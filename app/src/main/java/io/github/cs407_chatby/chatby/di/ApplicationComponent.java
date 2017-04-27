@@ -10,6 +10,7 @@ import dagger.Component;
 import io.github.cs407_chatby.chatby.ChatByApp;
 import io.github.cs407_chatby.chatby.di.auth.AuthComponent;
 import io.github.cs407_chatby.chatby.di.auth.AuthModule;
+import io.github.cs407_chatby.chatby.firebase.MessagingService;
 import io.github.cs407_chatby.chatby.ui.main.account.AccountFragment;
 import io.github.cs407_chatby.chatby.ui.main.active.ActiveFragment;
 import io.github.cs407_chatby.chatby.ui.main.create.CreateFragment;
@@ -27,6 +28,7 @@ public interface ApplicationComponent {
     void inject(MemberListFragment fragment);
     void inject(AccountFragment fragment);
     void inject(ActiveFragment fragment);
+    void inject(MessagingService service);
 
     AuthComponent plus(AuthModule module);
 

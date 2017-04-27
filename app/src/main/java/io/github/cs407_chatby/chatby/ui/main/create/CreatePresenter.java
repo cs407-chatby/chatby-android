@@ -19,7 +19,7 @@ import io.github.cs407_chatby.chatby.data.model.PostRoom;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.utils.LocationManager;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import retrofit2.HttpException;
+import io.reactivex.schedulers.Schedulers;
 
 public class CreatePresenter implements CreateContract.Presenter,
         CalendarDatePickerDialogFragment.OnDateSetListener,
@@ -67,6 +67,7 @@ public class CreatePresenter implements CreateContract.Presenter,
                 .map(location -> new PostRoom(title, Double.parseDouble(radius),
                         calendar.getTime(), null, location.getLatitude(), location.getLongitude()))
                 .flatMap(service::postRoom)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(room -> {
                     Log.d("create", room.toString());

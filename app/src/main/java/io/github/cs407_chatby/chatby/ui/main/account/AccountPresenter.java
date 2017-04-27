@@ -3,23 +3,27 @@ package io.github.cs407_chatby.chatby.ui.main.account;
 
 import javax.inject.Inject;
 
+import io.github.cs407_chatby.chatby.data.AuthHolder;
+import io.github.cs407_chatby.chatby.data.CurrentUserCache;
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
 import io.github.cs407_chatby.chatby.data.model.PatchPassword;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.data.AuthHolder;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class AccountPresenter implements AccountContract.Presenter {
 
     private final AuthHolder authHolder;
+    private final ChatByService service;
+    private final CurrentUserCache userCache;
+
     private AccountContract.View view;
 
-    private final ChatByService service;
-
     @Inject
-    public AccountPresenter(ChatByService service, AuthHolder authHolder) {
+    public AccountPresenter(ChatByService service, AuthHolder authHolder, CurrentUserCache userCache) {
         this.service = service;
         this.authHolder = authHolder;
+        this.userCache = userCache;
     }
 
     @Override
@@ -35,6 +39,7 @@ public class AccountPresenter implements AccountContract.Presenter {
     @Override
     public void onRefresh() {
         service.getCurrentUser()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.updateInfo(user);
@@ -45,6 +50,7 @@ public class AccountPresenter implements AccountContract.Presenter {
     public void onUpdateEmail(String email) {
         service.getCurrentUser()
                 .flatMap(user -> service.putUser(user.getId(), user.withEmail(email)))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.updateInfo(user);
@@ -57,6 +63,7 @@ public class AccountPresenter implements AccountContract.Presenter {
     public void onUpdateUsername(String username) {
         service.getCurrentUser()
                 .flatMap(user -> service.putUser(user.getId(), user.withUsername(username)))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.updateInfo(user);
@@ -79,6 +86,7 @@ public class AccountPresenter implements AccountContract.Presenter {
         service.getCurrentUser()
                 .flatMap(user -> service.putUser(user.getId(),
                         user.withFirstName(first).withLastName(last)))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.updateInfo(user);
@@ -96,6 +104,7 @@ public class AccountPresenter implements AccountContract.Presenter {
                     return user;
                 })
                 .flatMap(user -> service.postAuth(new AuthRequest(user.getUsername(), password)))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     authHolder.saveToken(response.getToken());
@@ -107,6 +116,7 @@ public class AccountPresenter implements AccountContract.Presenter {
     @Override
     public void onLogout() {
         authHolder.deleteToken();
+        userCache.setCurrentUser(null);
         if (view != null) view.showLoggedOut();
     }
 
@@ -114,6 +124,7 @@ public class AccountPresenter implements AccountContract.Presenter {
     public void onDeleteAccount() {
         service.getCurrentUser()
                 .flatMapCompletable(user -> service.deleteUser(user.getId()))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onLogout, error -> {
                     if (view != null)

@@ -16,6 +16,7 @@ import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class RoomPresenter implements RoomContract.Presenter {
     private final ChatByService service;
@@ -40,6 +41,7 @@ public class RoomPresenter implements RoomContract.Presenter {
         view.showLoading();
 
         service.getRoom(roomId)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(room -> {
                     this.room = room;
@@ -51,6 +53,7 @@ public class RoomPresenter implements RoomContract.Presenter {
 
     private void loadUserInfo() {
         service.getCurrentUser()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.setCurrentUser(user);
@@ -66,6 +69,7 @@ public class RoomPresenter implements RoomContract.Presenter {
 
     private void loadMessages() {
         service.getMessages(room.getId())
+                .subscribeOn(Schedulers.io())
                 .toObservable()
                 .flatMap(Observable::fromIterable)
                 .flatMapSingle(message -> service.getUser(message.getCreatedBy().getId())
@@ -93,6 +97,7 @@ public class RoomPresenter implements RoomContract.Presenter {
         service.postMessage(postMessage)
                 .flatMap(message -> service.getUser(message.getCreatedBy().getId())
                         .map(user -> ViewMessage.create(message, user)))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(message -> {
                     if (view != null) view.showMessageSent(message);
@@ -107,6 +112,7 @@ public class RoomPresenter implements RoomContract.Presenter {
         liking = true;
         service.getCurrentUser()
                 .flatMap(user -> service.getLikes(message.getId(), user.getId()))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(likes -> {
                     if (likes.size() > 0) dislike(message, likes.get(0));
@@ -126,6 +132,7 @@ public class RoomPresenter implements RoomContract.Presenter {
                 .flatMap(message -> service.getUser(message.getCreatedBy().getId())
                         .map(user -> ViewMessage.create(message, user)))
                 .doFinally(() -> liking = false)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(message -> {
                     if (view != null) view.showMessageUpdated(message);
@@ -139,6 +146,7 @@ public class RoomPresenter implements RoomContract.Presenter {
                 .flatMap(message -> service.getUser(message.getCreatedBy().getId())
                         .map(user -> ViewMessage.create(message, user)))
                 .doFinally(() -> liking = false)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(message -> {
                     if (view != null) view.showMessageUpdated(message);
@@ -149,6 +157,7 @@ public class RoomPresenter implements RoomContract.Presenter {
     public void onJoinRoomPressed() {
         PostMembership newMembership = new PostMembership(false, room.getUrl());
         service.postMembership(newMembership)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(membership -> {
                     Log.d("membership", membership.toString());
@@ -166,6 +175,7 @@ public class RoomPresenter implements RoomContract.Presenter {
     public void onLeaveRoomPressed() {
         service.getCurrentUser()
                 .flatMap(user -> service.getMembershipsForUserInRoom(user.getId(), room.getId()))
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(memberships -> {
                         if (memberships.size() > 0)
@@ -178,6 +188,7 @@ public class RoomPresenter implements RoomContract.Presenter {
 
     private void leaveRoom(Membership membership) {
         service.deleteMembership(membership.getId())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                         if (view != null) view.showNotJoined();

@@ -7,6 +7,7 @@ import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class MemberListPresenter implements MemberListContract.Presenter {
@@ -35,6 +36,7 @@ public class MemberListPresenter implements MemberListContract.Presenter {
         if (view != null) view.showLoading();
 
         service.getRoom(roomId)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(room -> {
                     this.room = room;
@@ -46,6 +48,7 @@ public class MemberListPresenter implements MemberListContract.Presenter {
 
     private void loadUserInfo() {
         service.getCurrentUser()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null)
@@ -63,6 +66,7 @@ public class MemberListPresenter implements MemberListContract.Presenter {
                 .flatMapSingle(membership -> service.getUser(membership.getUser().getId()))
                 .distinct()
                 .toList()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(users -> {
                     if (view != null) view.showMembers(users);
@@ -78,6 +82,8 @@ public class MemberListPresenter implements MemberListContract.Presenter {
                 .flatMap(Observable::fromIterable)
                 .flatMapSingle(membership -> service.deleteMembership(membership.getId())
                         .andThen(service.getUser(membership.getUser().getId())))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
                     if (view != null) view.showMemberDeleted(user);
                 }, error -> {

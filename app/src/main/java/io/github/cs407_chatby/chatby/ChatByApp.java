@@ -1,5 +1,6 @@
 package io.github.cs407_chatby.chatby;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
@@ -12,8 +13,8 @@ import io.github.cs407_chatby.chatby.di.DaggerApplicationComponent;
 public class ChatByApp extends Application {
 
     @Inject Application app;
-
     protected ApplicationComponent applicationComponent;
+    protected Activity currentActivity;
 
     public static ChatByApp get(Context context) {
         return (ChatByApp) context.getApplicationContext();
@@ -27,6 +28,22 @@ public class ChatByApp extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build();
         applicationComponent.inject(this);
+
+        registerActivityLifecycleCallbacks(new SimpleLifecycleListener() {
+            @Override
+            public void onActivityStarted(Activity activity) {
+                currentActivity = activity;
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+                currentActivity = null;
+            }
+        });
+    }
+
+    public Activity getCurrentActivity() {
+        return currentActivity;
     }
 
     public ApplicationComponent getComponent() {
