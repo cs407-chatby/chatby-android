@@ -123,12 +123,13 @@ public class NearbyFragment extends Fragment implements NearbyContract.View, Act
 
     @Override
     public void updateRooms(List<Room> rooms) {
+        roomList.setVisibility(View.VISIBLE);
         roomAdapter.setRooms(rooms);
     }
 
     @Override
     public void showLoading() {
-
+        roomList.setVisibility(View.INVISIBLE);
     }
 
     @Override

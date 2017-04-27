@@ -32,13 +32,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     }
 
     public void setRooms(List<Room> rooms) {
-        List<Room> listA = new ArrayList<>(this.rooms);
-        List<Room> listB = new ArrayList<>(rooms);
-        listA.removeAll(rooms);
-        listB.removeAll(this.rooms);
-        if (!listA.isEmpty() || !listB.isEmpty()) {
+        if (this.rooms.size() != rooms.size()) {
             this.rooms = rooms;
             notifyDataSetChanged();
+        } else {
+            for (int i = 0; i < rooms.size(); i++) {
+                if (!this.rooms.get(i).equals(rooms.get(i))) {
+                    this.rooms = rooms;
+                    notifyDataSetChanged();
+                    return;
+                }
+            }
         }
     }
 
