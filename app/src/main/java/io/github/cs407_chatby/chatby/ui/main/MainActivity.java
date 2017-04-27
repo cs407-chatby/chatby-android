@@ -5,12 +5,11 @@ import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import io.github.cs407_chatby.chatby.R;
@@ -118,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
         float size = (float) Math.hypot(root.getHeight(), root.getWidth());
         createFrame.setVisibility(View.VISIBLE);
         Animator animator = createCircularReveal(createFrame, fabX, fabY, 0, size)
-                .setDuration(400);
-        animator.setInterpolator(new DecelerateInterpolator());
+                .setDuration(200);
+        animator.setInterpolator(new FastOutLinearInInterpolator());
         animator.start();
         fab.setVisibility(View.INVISIBLE);
     }
@@ -132,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
             int fabY = Float.valueOf(fab.getY() + (fab.getHeight() / 2)).intValue();
             float size = (float) Math.hypot(root.getHeight(), root.getWidth());
             Animator animator = ViewAnimationUtils.createCircularReveal(createFrame, fabX, fabY, size, 0)
-                    .setDuration(400);
-            animator.setInterpolator(new AccelerateInterpolator());
+                    .setDuration(200);
+            animator.setInterpolator(new FastOutLinearInInterpolator());
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {}
