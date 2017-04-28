@@ -115,7 +115,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         if (holder instanceof ReceivedMessageViewHolder) {
             ReceivedMessageViewHolder h = (ReceivedMessageViewHolder) holder;
-            h.name.setText(message.getCreatedBy().getUsername());
+            if (message.getAnonymous())
+                h.name.setText("Anonymous");
+            else
+                h.name.setText(message.getCreatedBy().getUsername());
 
             // Check if current user has liked the message
             if (currentUser != null)

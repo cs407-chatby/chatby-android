@@ -1,6 +1,7 @@
 package io.github.cs407_chatby.chatby.ui.room.main;
 
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -22,6 +23,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class RoomPresenter implements RoomContract.Presenter {
     private final ChatByService service;
+    private final SharedPreferences preferences;
 
     private RoomContract.View view = null;
     private Room room = null;
@@ -29,8 +31,9 @@ public class RoomPresenter implements RoomContract.Presenter {
     private boolean liking = false;
 
     @Inject
-    public RoomPresenter(ChatByService service) {
+    public RoomPresenter(ChatByService service, SharedPreferences preferences) {
         this.service = service;
+        this.preferences = preferences;
     }
 
     @Override
@@ -109,7 +112,8 @@ public class RoomPresenter implements RoomContract.Presenter {
     @Override
     public void onSendPressed(String text) {
         if (room == null) return;
-        PostMessage postMessage = new PostMessage(false, text, room.getUrl());
+        boolean anonymous = preferences.getBoolean("anon", false);
+        PostMessage postMessage = new PostMessage(anonymous, text, room.getUrl());
         service.postMessage(postMessage)
                 .flatMap(message -> service.getUser(message.getCreatedBy().getId())
                         .map(user -> ViewMessage.create(message, user)))

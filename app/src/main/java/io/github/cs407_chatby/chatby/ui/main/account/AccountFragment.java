@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ public class AccountFragment extends Fragment implements AccountContract.View {
     Button editEmail;
     Button editUsername;
     Button editName;
+    Switch anonToggle;
     View changePassword;
     View logout;
     View deleteAccount;
@@ -50,6 +52,7 @@ public class AccountFragment extends Fragment implements AccountContract.View {
         editEmail = ViewUtils.findView(view, R.id.email_edit);
         editUsername = ViewUtils.findView(view, R.id.username_edit);
         editName = ViewUtils.findView(view, R.id.name_edit);
+        anonToggle = ViewUtils.findView(view, R.id.toggle_anonymous);
         changePassword = ViewUtils.findView(view, R.id.change_password);
         logout = ViewUtils.findView(view, R.id.logout);
         deleteAccount = ViewUtils.findView(view, R.id.delete_account);
@@ -70,6 +73,10 @@ public class AccountFragment extends Fragment implements AccountContract.View {
             showDialog("Full Name", (dialog, text) -> {
                 if (presenter != null) presenter.onUpdateName(text);
             });
+        });
+
+        anonToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (presenter != null) presenter.onToggleAnonymous(isChecked);
         });
 
         changePassword.setOnClickListener(v -> {
@@ -147,6 +154,11 @@ public class AccountFragment extends Fragment implements AccountContract.View {
     @Override
     public void showLoggedOut() {
         ActivityUtils.start(getActivity(), AuthActivity.class, null, true);
+    }
+
+    @Override
+    public void showAnonymous(boolean toggled) {
+        anonToggle.setChecked(toggled);
     }
 
     public static AccountFragment newInstance(Bundle args) {

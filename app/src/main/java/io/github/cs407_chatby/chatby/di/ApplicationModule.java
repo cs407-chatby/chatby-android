@@ -2,6 +2,7 @@ package io.github.cs407_chatby.chatby.di;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Geocoder;
 
 import com.google.gson.FieldNamingPolicy;
@@ -15,9 +16,9 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import io.github.cs407_chatby.chatby.ChatByApp;
+import io.github.cs407_chatby.chatby.data.AuthInterceptor;
 import io.github.cs407_chatby.chatby.data.model.ResourceUrl;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
-import io.github.cs407_chatby.chatby.data.AuthInterceptor;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -97,5 +98,10 @@ public class ApplicationModule {
                 .client(okHttpClient)
                 .build()
                 .create(ChatByService.class);
+    }
+
+    @Provides
+    public SharedPreferences provideSharedPreferences() {
+        return app.getSharedPreferences("Settings", 0);
     }
 }
