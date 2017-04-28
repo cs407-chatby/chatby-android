@@ -1,5 +1,6 @@
 package io.github.cs407_chatby.chatby.ui.room;
 
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,10 @@ public class RoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(getIntent().getIntExtra(ROOM_ID, -1));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()

@@ -1,6 +1,8 @@
 package io.github.cs407_chatby.chatby.ui.room.main;
 
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import io.github.cs407_chatby.chatby.utils.ViewUtils;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private OnLikeClickedListener listener;
+    private OnItemInsertedListener insertedListener;
     private List<ViewMessage> messages = new ArrayList<>();
     private User currentUser;
     private int activePosition = -1;
@@ -50,14 +53,32 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
     public void setMessages(@NonNull List<ViewMessage> messages) {
+        final RecyclerView.Adapter adapter = this;
+        DiffUtil.calculateDiff(new DiffMessageCallback(this.messages, messages))
+                .dispatchUpdatesTo(new ListUpdateCallback() {
+                    @Override
+                    public void onInserted(int position, int count) {
+                        adapter.notifyItemRangeInserted(position, count);
+                        if ((position + count) < messages.size())
+                            adapter.notifyItemChanged(position + count);
+                        if (position > 0)
+                            adapter.notifyItemChanged(position - 1);
+                        insertedListener.itemInserted();
+                    }
+                    @Override
+                    public void onRemoved(int position, int count) {
+                        adapter.notifyItemRangeRemoved(position, count);
+                    }
+                    @Override
+                    public void onMoved(int fromPosition, int toPosition) {
+                        adapter.notifyItemMoved(fromPosition, toPosition);
+                    }
+                    @Override
+                    public void onChanged(int position, int count, Object payload) {
+                        adapter.notifyItemRangeChanged(position, count, payload);
+                    }
+                });
         this.messages = messages;
-        this.messages.sort((o1, o2) -> {
-            long t = o1.getCreationTime().getTime() - o2.getCreationTime().getTime();
-            if (t < 0) return 1;
-            else if (t > 0) return -1;
-            else return 0;
-        });
-        notifyDataSetChanged();
     }
 
     public void addMessage(@NonNull ViewMessage message) {
@@ -68,6 +89,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public void setOnLikeClickedListener(OnLikeClickedListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnItemInsertedListener(OnItemInsertedListener listener) {
+        this.insertedListener = listener;
     }
 
     @Override
@@ -84,22 +109,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
     }
 
-    private boolean hasSameCreators(ViewMessage a, ViewMessage b) {
-        return a.getCreatedBy().equals(b.getCreatedBy());
-    }
-
     private boolean hasTopNeighbor(int position) {
         if (position >= messages.size() - 1) return false;
-        int topId = messages.get(position + 1).getCreatedBy().getId();
-        int selfId = messages.get(position).getCreatedBy().getId();
-        return topId == selfId;
+        ViewMessage top = messages.get(position + 1);
+        ViewMessage self = messages.get(position);
+        int topId = top.getCreatedBy().getId();
+        int selfId = self.getCreatedBy().getId();
+        return topId == selfId && (top.getAnonymous() == self.getAnonymous());
     }
 
     private boolean hasBottomNeighbor(int position) {
         if (position <= 0) return false;
-        int bottomId = messages.get(position - 1).getCreatedBy().getId();
-        int selfId = messages.get(position).getCreatedBy().getId();
-        return bottomId == selfId;
+        ViewMessage bottom = messages.get(position - 1);
+        ViewMessage self = messages.get(position);
+        int bottomId = bottom.getCreatedBy().getId();
+        int selfId = self.getCreatedBy().getId();
+        return bottomId == selfId && (bottom.getAnonymous() == self.getAnonymous());
     }
 
     @Override
@@ -232,5 +257,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     interface OnLikeClickedListener {
         void onLike(ViewMessage message);
+    }
+
+    interface OnItemInsertedListener {
+        void itemInserted();
     }
 }

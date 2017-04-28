@@ -60,7 +60,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         public void onReceive(Context context, Intent intent) {
             Bundle args = getArguments();
             if (args != null && presenter != null)
-                presenter.onInitialize(args.getInt(RoomActivity.ROOM_ID));
+                presenter.onRefresh(args.getInt(RoomActivity.ROOM_ID));
         }
     };
 
@@ -87,6 +87,7 @@ public class RoomFragment extends Fragment implements RoomContract.View {
         joinButton.setOnClickListener(v -> presenter.onJoinRoomPressed());
         sendButton.setOnClickListener(v -> presenter.onSendPressed(messageForm.getText().toString()));
         adapter.setOnLikeClickedListener(message -> presenter.onMessageLikePressed(message));
+        adapter.setOnItemInsertedListener(() -> messageList.smoothScrollToPosition(0));
 
         messageList.setAdapter(adapter);
 

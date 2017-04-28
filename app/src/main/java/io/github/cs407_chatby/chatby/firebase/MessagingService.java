@@ -1,12 +1,10 @@
 package io.github.cs407_chatby.chatby.firebase;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.support.annotation.IntegerRes;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -18,6 +16,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.ChatByApp;
+import io.github.cs407_chatby.chatby.R;
 import io.github.cs407_chatby.chatby.data.CurrentUserCache;
 import io.github.cs407_chatby.chatby.data.model.User;
 import io.github.cs407_chatby.chatby.ui.room.RoomActivity;
@@ -75,7 +74,9 @@ public class MessagingService extends FirebaseMessagingService {
                             .setConversationTitle(title)
                             .addMessage(message, remoteMessage.getSentTime(), sender))
                     .setContentIntent(pendingIntent)
-                    .setSmallIcon(android.R.drawable.sym_def_app_icon)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setPriority(Notification.PRIORITY_HIGH)
                     .build();
 
             NotificationManager notificationManager =

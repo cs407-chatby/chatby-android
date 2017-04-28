@@ -17,8 +17,8 @@ import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 public class RoomPresenter implements RoomContract.Presenter {
@@ -45,6 +45,11 @@ public class RoomPresenter implements RoomContract.Presenter {
     public void onInitialize(int roomId) {
         view.showLoading();
 
+        onRefresh(roomId);
+    }
+
+    @Override
+    public void onRefresh(int roomId) {
         service.getRoom(roomId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -81,6 +86,15 @@ public class RoomPresenter implements RoomContract.Presenter {
                 .flatMapSingle(message -> service.getUser(message.getCreatedBy().getId())
                         .map(user -> ViewMessage.create(message, user)))
                 .toList()
+                .flatMap(messages -> {
+                    messages.sort((o1, o2) -> {
+                        long t = o1.getCreationTime().getTime() - o2.getCreationTime().getTime();
+                        if (t < 0) return 1;
+                        else if (t > 0) return -1;
+                        else return 0;
+                    });
+                    return Single.just(messages);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(messages -> {
                     if (view == null) return;

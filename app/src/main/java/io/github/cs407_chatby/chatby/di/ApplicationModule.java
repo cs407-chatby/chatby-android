@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Geocoder;
+import android.preference.PreferenceManager;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -102,6 +103,6 @@ public class ApplicationModule {
 
     @Provides
     public SharedPreferences provideSharedPreferences() {
-        return app.getSharedPreferences("Settings", 0);
+        return PreferenceManager.getDefaultSharedPreferences(app);
     }
 }

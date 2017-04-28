@@ -1,8 +1,11 @@
 package io.github.cs407_chatby.chatby.ui.auth;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import javax.inject.Inject;
 
@@ -15,6 +18,7 @@ import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.di.PerActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 
 @PerActivity
 class AuthPresenter implements AuthContract.Presenter {
@@ -22,6 +26,7 @@ class AuthPresenter implements AuthContract.Presenter {
     private final AuthHolder authHolder;
     private final ChatByService service;
     private final CurrentUserCache userCache;
+    private final SharedPreferences preferences;
 
     @Nullable
     private AuthContract.View view = null;
@@ -29,10 +34,12 @@ class AuthPresenter implements AuthContract.Presenter {
     private AuthContract.Form formType = AuthContract.Form.Login;
 
     @Inject
-    public AuthPresenter(ChatByService service, AuthHolder authHolder, CurrentUserCache userCache) {
+    public AuthPresenter(ChatByService service, AuthHolder authHolder,
+                         CurrentUserCache userCache, SharedPreferences preferences) {
         this.service = service;
         this.authHolder = authHolder;
         this.userCache = userCache;
+        this.preferences = preferences;
     }
 
     @Override
@@ -81,29 +88,39 @@ class AuthPresenter implements AuthContract.Presenter {
 
         Log.d("Found id", id);
 
-        if (id.length() == 0)
-            return;
+        if (id.isEmpty()) {
+            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+            Log.d("Firebase", "Refreshed token: " + refreshedToken);
+            if (refreshedToken == null || refreshedToken.isEmpty())
+                return;
+            preferences.edit().putString("DEVICE_ID", refreshedToken).apply();
+            id = refreshedToken;
+        }
+
+        final String fid = id;
 
         service.getCurrentUser()
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(user -> service.getDevicesForUser(user.getId()))
                 .toObservable()
                 .flatMapIterable(devices -> devices)
                 .filter(device -> {
                     if (view == null)
                         throw new RuntimeException();
-                    return device.getDevice().equals(id);
+                    return device.getDevice().equals(fid);
                 })
                 .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(devices -> {
                     if (devices.size() > 0)
                         onSuccess.run();
                     else {
-                        service.postDevice(new PostDevice(id))
+                        service.postDevice(new PostDevice(fid))
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(device -> onSuccess.run());
                     }
                 });
+
     }
 
     private void login(String email, String password) {
