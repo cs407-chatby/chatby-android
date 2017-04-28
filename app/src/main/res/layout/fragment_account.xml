@@ -165,7 +165,7 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/set_anonymous"
+                android:id="@+id/set_anonymous_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -175,6 +175,7 @@
                 android:text="@string/set_anonymous"/>
 
             <Switch
+                android:id="@+id/toggle_anonymous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
