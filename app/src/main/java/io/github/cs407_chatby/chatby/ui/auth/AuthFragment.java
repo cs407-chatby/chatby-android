@@ -3,6 +3,7 @@ package io.github.cs407_chatby.chatby.ui.auth;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -121,6 +122,12 @@ public class AuthFragment extends Fragment implements AuthContract.View, OnBackP
         if (view != null) {
             Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public String getDeviceId() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+                .getString("DEVICE_ID", "");
     }
 
     public static AuthFragment newInstance() {

@@ -9,10 +9,12 @@ import javax.inject.Inject;
 import io.github.cs407_chatby.chatby.data.AuthHolder;
 import io.github.cs407_chatby.chatby.data.CurrentUserCache;
 import io.github.cs407_chatby.chatby.data.model.AuthRequest;
+import io.github.cs407_chatby.chatby.data.model.PostDevice;
 import io.github.cs407_chatby.chatby.data.model.PostUser;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.di.PerActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 
 @PerActivity
 class AuthPresenter implements AuthContract.Presenter {
@@ -37,9 +39,8 @@ class AuthPresenter implements AuthContract.Presenter {
     public void onAttach(@NonNull AuthContract.View view) {
         this.view = view;
         if (authHolder.readToken() != null) {
-            // TODO make a request to check the token is valid
             working = true;
-            showSuccess();
+            sendDeviceId(this::showSuccess);
         }
     }
 
@@ -72,6 +73,39 @@ class AuthPresenter implements AuthContract.Presenter {
         }
     }
 
+    private void sendDeviceId(Action onSuccess) {
+        if (view == null)
+            return;
+
+        String id = view.getDeviceId();
+
+        Log.e("TEST", "Found id: \'" + id + '\'');
+
+        if (id.length() == 0)
+            return;
+
+        service.getCurrentUser()
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(user -> service.getDevicesForUser(user.getId()))
+                .toObservable()
+                .flatMapIterable(devices -> devices)
+                .filter(device -> {
+                    if (view == null)
+                        throw new RuntimeException();
+                    return device.getDevice().equals(id);
+                })
+                .toList()
+                .subscribe(devices -> {
+                    if (devices.size() > 0)
+                        onSuccess.run();
+                    else {
+                        service.postDevice(new PostDevice(id))
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(device -> onSuccess.run());
+                    }
+                });
+    }
+
     private void login(String email, String password) {
         AuthRequest request = new AuthRequest(email, password);
         service.postAuth(request)
@@ -79,7 +113,7 @@ class AuthPresenter implements AuthContract.Presenter {
                 .subscribe(authResponse -> {
                     Log.d("response", authResponse.toString());
                     authHolder.saveToken(authResponse.getToken());
-                    showSuccess();
+                    sendDeviceId(this::showSuccess);
                 }, error -> {
                     Log.e("response", "login failure", error);
                     showFailure("Failed to log in!");

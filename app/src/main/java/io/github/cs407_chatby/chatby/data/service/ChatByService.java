@@ -151,4 +151,12 @@ public interface ChatByService {
     Completable deleteRoomLike(@Path("id") Integer id);
 
     // endregion
+
+    // region Device
+
+    @GET("devices/")
+    Single<List<Device>> getDevicesForUser(@Query("user") Integer userId);
+
+    @POST("devices/")
+    Single<Device> postDevice(@Body PostDevice device);
 }

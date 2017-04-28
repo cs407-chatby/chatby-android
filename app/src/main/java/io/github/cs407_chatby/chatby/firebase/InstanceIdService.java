@@ -1,5 +1,8 @@
 package io.github.cs407_chatby.chatby.firebase;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -12,6 +15,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d("Firebase", "Refreshed token: " + refreshedToken);
 
-        // TODO send token to chatby server
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .edit().putString("DEVICE_ID", refreshedToken).apply();
     }
 }

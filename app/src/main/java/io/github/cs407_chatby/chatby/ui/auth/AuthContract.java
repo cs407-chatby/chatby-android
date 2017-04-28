@@ -21,5 +21,6 @@ class AuthContract {
         void showLoggedIn();
         void showError(String message);
         void toggleForm();
+        String getDeviceId();
     }
 }
