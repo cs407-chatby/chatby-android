@@ -137,6 +137,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         holder.counterText.setText(count);
 
         if (likes == 0) holder.counterText.setVisibility(View.INVISIBLE);
+        else holder.counterText.setVisibility(View.VISIBLE);
 
         if (holder instanceof ReceivedMessageViewHolder) {
             ReceivedMessageViewHolder h = (ReceivedMessageViewHolder) holder;

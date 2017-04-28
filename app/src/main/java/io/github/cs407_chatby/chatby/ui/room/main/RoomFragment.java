@@ -239,6 +239,10 @@ public class RoomFragment extends Fragment implements RoomContract.View {
                 presenter.onRoomStarClicked();
                 return true;
             }
+            case R.id.action_refresh: {
+                presenter.onRefresh(getArguments().getInt(RoomActivity.ROOM_ID));
+                return true;
+            }
             case R.id.action_leave: {
                 presenter.onLeaveRoomPressed();
                 Log.d("Room", "Leaving room");
