@@ -129,4 +129,26 @@ public interface ChatByService {
     Completable deleteLike(@Path("id") Integer id);
 
     // endregion
+
+    // region RoomLikes
+
+    @GET("roomlikes/")
+    Single<List<RoomLike>> getRoomLikesForUser(@Query("user") Integer userId);
+
+    @GET("roomlikes/")
+    Single<List<RoomLike>> getRoomLikesForUserAndRoom(@Query("user") Integer userId, @Query("room") Integer roomId);
+
+    @POST("roomlikes/")
+    Single<RoomLike> postRoomLike(@Body PostRoomLike like);
+
+    @GET("roomlikes/{id}/")
+    Single<RoomLike> getRoomLike(@Path("id") Integer id);
+
+    @PUT("roomlikes/{id}/")
+    Single<RoomLike> putRoomLike(@Path("id") Integer id, @Body RoomLike like);
+
+    @DELETE("roomlikes/{id}/")
+    Completable deleteRoomLike(@Path("id") Integer id);
+
+    // endregion
 }

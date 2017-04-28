@@ -12,11 +12,13 @@ import io.github.cs407_chatby.chatby.data.model.Membership;
 import io.github.cs407_chatby.chatby.data.model.PostLike;
 import io.github.cs407_chatby.chatby.data.model.PostMembership;
 import io.github.cs407_chatby.chatby.data.model.PostMessage;
+import io.github.cs407_chatby.chatby.data.model.PostRoomLike;
 import io.github.cs407_chatby.chatby.data.model.Room;
 import io.github.cs407_chatby.chatby.data.service.ChatByService;
 import io.github.cs407_chatby.chatby.ui.viewModel.ViewMessage;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 public class RoomPresenter implements RoomContract.Presenter {
@@ -51,6 +53,7 @@ public class RoomPresenter implements RoomContract.Presenter {
                     if (view != null) view.showRoom(room);
                     loadUserInfo();
                     loadMessages();
+                    loadStarred();
                 });
     }
 
@@ -85,6 +88,19 @@ public class RoomPresenter implements RoomContract.Presenter {
                         view.showMessages(messages);
                     else view.showEmpty();
                 }, error -> view.showError("Failed to retrieve messages"));
+    }
+
+    private void loadStarred() {
+        service.getCurrentUser()
+                .flatMap(user -> service.getRoomLikesForUserAndRoom(user.getId(), room.getId()))
+                .subscribe(roomLikes -> {
+                    if (view != null) {
+                        if (roomLikes.size() > 0)
+                            view.showStarred();
+                        else
+                            view.showNotStarred();
+                    }
+                });
     }
 
     @Override
@@ -126,8 +142,24 @@ public class RoomPresenter implements RoomContract.Presenter {
 
     @Override
     public void onRoomStarClicked() {
-        // TODO
-        if (view != null) view.showStarred();
+        service.getCurrentUser()
+                .flatMap(user -> service.getRoomLikesForUserAndRoom(user.getId(), room.getId()))
+                .subscribe(roomLikes -> {
+                    if (roomLikes.size() > 0) {
+                        service.deleteRoomLike(roomLikes.get(0).getId())
+                                .subscribe(() -> {
+                                    if (view != null) view.showNotStarred();
+                                });
+                    } else {
+                        service.postRoomLike(new PostRoomLike(room.getUrl()))
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(roomLike -> {
+                                    if (view != null) view.showStarred();
+                                });
+                    }
+                });
+
     }
 
     private void dislike(ViewMessage dislikedMessage, Like like) {
