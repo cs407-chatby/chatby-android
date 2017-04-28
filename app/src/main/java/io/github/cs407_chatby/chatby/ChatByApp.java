@@ -3,6 +3,7 @@ package io.github.cs407_chatby.chatby;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -32,12 +33,16 @@ public class ChatByApp extends Application {
         registerActivityLifecycleCallbacks(new SimpleLifecycleListener() {
             @Override
             public void onActivityStarted(Activity activity) {
+                Log.e("currentActivity", "set to " + activity);
                 currentActivity = activity;
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-                currentActivity = null;
+                if (activity == currentActivity) {
+                    Log.e("currentActivity", "cleared");
+                    currentActivity = null;
+                }
             }
         });
     }

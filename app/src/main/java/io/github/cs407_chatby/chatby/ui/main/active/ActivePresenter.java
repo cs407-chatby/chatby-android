@@ -36,8 +36,6 @@ public class ActivePresenter implements ActiveContract.Presenter {
     public void onRefresh() {
         if (view != null) view.showLoading();
 
-        Log.e("TEST", "refreshing active presenter");
-
         service.getCurrentUser()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -45,8 +43,6 @@ public class ActivePresenter implements ActiveContract.Presenter {
     }
 
     private void roomListChain(User user) {
-        Log.e("TEST", "starting room list chain");
-
         service.getRoomLikesForUser(user.getId())
                 .toObservable()
                 .flatMapIterable(likes -> likes)
@@ -56,14 +52,10 @@ public class ActivePresenter implements ActiveContract.Presenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(favoriteRooms -> {
 
-                    Log.e("TEST", favoriteRooms.size() + " favorites");
-
                     service.getRooms(user.getId())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(createdRooms -> {
-
-                                Log.e("TEST", createdRooms.size() + " created");
 
                                 service.getMembershipsForUser(user.getId())
                                         .toObservable()
@@ -76,12 +68,8 @@ public class ActivePresenter implements ActiveContract.Presenter {
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(activeRooms -> {
 
-                                            Log.e("TEST", activeRooms.size() + " active");
-
                                             activeRooms.removeAll(favoriteRooms);
                                             activeRooms.removeAll(createdRooms);
-
-                                            Log.e("TEST", activeRooms.size() + " filtered active");
 
                                             if (view != null) {
                                                 view.showFavorite(favoriteRooms);

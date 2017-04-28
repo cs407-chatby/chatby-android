@@ -79,7 +79,7 @@ class AuthPresenter implements AuthContract.Presenter {
 
         String id = view.getDeviceId();
 
-        Log.e("TEST", "Found id: \'" + id + '\'');
+        Log.d("Found id", id);
 
         if (id.length() == 0)
             return;

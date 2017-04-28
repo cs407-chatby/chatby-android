@@ -1,15 +1,19 @@
 package io.github.cs407_chatby.chatby.firebase;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -27,22 +31,22 @@ public class MessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         ChatByApp.get(this).getComponent().inject(this);
-        Log.d("Firebase", "From: " + remoteMessage.getFrom());
+        Log.e("Firebase", "From: " + remoteMessage.getFrom());
 
-        if (remoteMessage.getData().size() > 0) {
-            Log.d("Firebase", "Message data payload: " + remoteMessage.getData());
+        Map<String, String> data = remoteMessage.getData();
+
+        if (data.size() > 0) {
+            Log.e("Firebase", "Message data payload: " + data);
         }
 
-        if (remoteMessage.getNotification() != null) {
-            Log.d("Firebase", "Message notification body: " + remoteMessage.getNotification().getBody());
-        }
+        ChatByApp app = (ChatByApp) getApplication();
+        Activity activity = app.getCurrentActivity();
+        int id = Integer.valueOf(data.get("Id"));
 
-        Activity activity = ChatByApp.get(this).getCurrentActivity();
-        String id = remoteMessage.getData().get("Id");
-        Intent args = activity.getIntent();
-        int currentId = args.getIntExtra(RoomActivity.ROOM_ID, -1);
+        if (activity != null && activity instanceof RoomActivity
+                && id == activity.getIntent().getIntExtra(RoomActivity.ROOM_ID, -1)) {
 
-        if (activity instanceof RoomActivity && Integer.valueOf(id) == currentId) {
+            Log.e("Firebase", "refreshing room");
 
             Intent intent = new Intent();
             intent.setAction(ACTION_MESSAGE_RECEIVED);
@@ -50,9 +54,11 @@ public class MessagingService extends FirebaseMessagingService {
 
         } else {
 
-            String title = remoteMessage.getData().get("Title");
-            String message = remoteMessage.getData().get("Message");
-            String sender = remoteMessage.getData().get("Sender");
+            Log.e("Firebase", "creating notification");
+
+            String title = data.get("Title");
+            String message = data.get("Message");
+            String sender = data.get("Sender");
 
             String name = "None";
             User currentUser = userCache.getCurrentUser();
@@ -69,11 +75,12 @@ public class MessagingService extends FirebaseMessagingService {
                             .setConversationTitle(title)
                             .addMessage(message, remoteMessage.getSentTime(), sender))
                     .setContentIntent(pendingIntent)
+                    .setSmallIcon(android.R.drawable.sym_def_app_icon)
                     .build();
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(Integer.valueOf(id), notification);
+            notificationManager.notify(id, notification);
 
         }
     }
