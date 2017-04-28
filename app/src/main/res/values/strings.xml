@@ -56,4 +56,5 @@
     <string name="start_conversation">Send a message to start the conversation.</string>
     <string name="no_rooms_nearby">No rooms nearby</string>
     <string name="no_nearby_explanation">Rooms within distance will show up here</string>
+    <string name="set_anonymous">Show as anonymous</string>
 </resources>

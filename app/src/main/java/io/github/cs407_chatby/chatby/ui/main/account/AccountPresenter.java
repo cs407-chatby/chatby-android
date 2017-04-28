@@ -1,6 +1,8 @@
 package io.github.cs407_chatby.chatby.ui.main.account;
 
 
+import android.content.SharedPreferences;
+
 import javax.inject.Inject;
 
 import io.github.cs407_chatby.chatby.data.AuthHolder;
@@ -16,14 +18,17 @@ public class AccountPresenter implements AccountContract.Presenter {
     private final AuthHolder authHolder;
     private final ChatByService service;
     private final CurrentUserCache userCache;
+    private final SharedPreferences preferences;
 
     private AccountContract.View view;
 
     @Inject
-    public AccountPresenter(ChatByService service, AuthHolder authHolder, CurrentUserCache userCache) {
+    public AccountPresenter(ChatByService service, AuthHolder authHolder,
+                            CurrentUserCache userCache, SharedPreferences preferences) {
         this.service = service;
         this.authHolder = authHolder;
         this.userCache = userCache;
+        this.preferences = preferences;
     }
 
     @Override
@@ -44,6 +49,8 @@ public class AccountPresenter implements AccountContract.Presenter {
                 .subscribe(user -> {
                     if (view != null) view.updateInfo(user);
                 });
+
+        if (view != null) view.showAnonymous(preferences.getBoolean("anon", false));
     }
 
     @Override
@@ -93,6 +100,12 @@ public class AccountPresenter implements AccountContract.Presenter {
                 }, error -> {
                     if (view != null) view.showError("Failed to update name");
                 });
+    }
+
+    @Override
+    public void onToggleAnonymous(boolean toggled) {
+        preferences.edit().putBoolean("anon", toggled).apply();
+        if (view != null) view.showAnonymous(toggled);
     }
 
     @Override

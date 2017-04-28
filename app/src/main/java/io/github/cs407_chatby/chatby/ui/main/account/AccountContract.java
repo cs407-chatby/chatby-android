@@ -12,6 +12,7 @@ public class AccountContract {
         void onUpdateEmail(String email);
         void onUpdateUsername(String username);
         void onUpdateName(String name);
+        void onToggleAnonymous(boolean toggled);
         void onUpdatePassword(String password);
         void onLogout();
         void onDeleteAccount();
@@ -21,5 +22,6 @@ public class AccountContract {
         void updateInfo(User user);
         void showError(String message);
         void showLoggedOut();
+        void showAnonymous(boolean toggled);
     }
 }
